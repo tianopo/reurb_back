@@ -1,0 +1,40 @@
+{
+  "material-icon-theme.activeIconPack": "react",
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#02702c",
+    "titleBar.inactiveBackground": "#012e12",
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma",
+    "editor.formatOnSave": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    ".eslintrc.json": true,
+    ".eslintignore": true,
+    ".prettierrc": true,
+    ".github": true,
+    ".tool-versions": true,
+    "tsconfig.app*": true,
+  },
+  "search.exclude": {
+    "**/dist": true
+  },
+  "typescript.preferences.quoteStyle": "double",
+  "editor.minimap.enabled": true, // ativa o minimap
+  "editor.wordWrap": "on", // ativa a quebra de linha automatica
+  "editor.renderWhitespace": "boundary", // espaço em branco destacado no limite da linha
+  "editor.cursorSmoothCaretAnimation": "on", //adiciona animação suave ao cursor
+  "editor.suggest.snippetsPreventQuickSuggestions": false, // snippets sugeridos na digitação
+  "editor.insertSpaces": true, // editor insere espaços em vez de tabs
+  "editor.tabSize": 2, // identação é 2 espaços
+  "editor.formatOnSave": true, // formatação automática do código ao salvar o arquivo
+  "editor.formatOnType": true, // formatação automática enquanto digita
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.tslint": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.addMissingImports": "explicit"
+  }, // ações automáticas que devem ser executadas ao salvar um arquivo
+}

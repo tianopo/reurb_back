@@ -1,0 +1,9 @@
+{
+  "plugins": [],
+  "semi": true,
+  "singleQuote": false,
+  "arrowParens": "always",
+  "endOfLine": "auto",
+  "trailingComma": "all",
+  "printWidth": 100
+}
