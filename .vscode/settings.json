@@ -16,6 +16,7 @@
     ".github": true,
     ".tool-versions": true,
     "tsconfig.app*": true,
+    "nest-cli.json": true,
   },
   "search.exclude": {
     "**/dist": true
