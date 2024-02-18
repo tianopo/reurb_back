@@ -1,6 +1,6 @@
 version: '3'
 services:
-  mysql_imnd:
+  mysql_first:
     image: mysql:latest
     container_name: mysql_${DATABASE_DATABASE}
     restart: always
@@ -13,4 +13,3 @@ services:
       - '${DATABASE_PORT}:3306'
     expose:
       - '${DATABASE_PORT}'
-
