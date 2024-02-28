@@ -38,7 +38,7 @@
     "max-lines": [
       "error",
       {
-        "max": 100
+        "max": 200
       }
     ], // máx 200 linhas e skipBlankLines e skipComments são falsos
     "no-duplicate-imports": "error", // sem duplicação nos importes
