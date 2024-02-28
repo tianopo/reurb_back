@@ -1,10 +1,10 @@
 import { PrismaService } from "@/prisma/prisma.service";
-import { ConflictException, Injectable } from '@nestjs/common';
-import { User } from './user.dto';
+import { ConflictException, Injectable } from "@nestjs/common";
+import { User } from "./user.dto";
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async findAll() {
     return this.prisma.user.findMany();
@@ -17,7 +17,7 @@ export class UserService {
       },
     });
     if (existir) {
-      throw new ConflictException('email já existe');
+      throw new ConflictException("email já existe");
     }
 
     return this.prisma.user.create({

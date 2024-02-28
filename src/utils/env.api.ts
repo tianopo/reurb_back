@@ -1,9 +1,9 @@
-import * as dotenv from 'dotenv'
+import * as dotenv from "dotenv";
 
-dotenv.config({ path: '.env' })
+dotenv.config({ path: ".env" });
 
 export const ENV_API = {
-  versão_build: '1.0.0',
+  versão_build: "1.0.0",
   projeto: process.env.PROJETO,
   nodeEnv: process.env.NODE_ENV,
   database: {
@@ -13,4 +13,4 @@ export const ENV_API = {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_DATABASE,
   },
-}
+};

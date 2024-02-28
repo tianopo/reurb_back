@@ -51,7 +51,6 @@
     "@typescript-eslint/prefer-nullish-coalescing": 0, // desativa o aviso de ?? em vez de ||
     "@typescript-eslint/strict-boolean-expressions": 0, // desativa expressões boleanas estritas
     "@typescript-eslint/restrict-template-expressions": 0, // `${123}` desativa este erro
-    "@typescript-eslint/no-useless-constructor": 0, // aviso de construtores desnecessários
     "no-unexpected-multiline": 0, // aviso sobre quebra de linhas inesperadas
     "@typescript-eslint/consistent-type-definitions": 0,
     "no-console": "warn", // define aviso para uso de console

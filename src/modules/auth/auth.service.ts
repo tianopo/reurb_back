@@ -1,11 +1,11 @@
-import { User } from '@/modules/user/user.dto';
+import { User } from "@/modules/user/user.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { UserService } from 'src/modules/user/user.service';
-import { CadastroUserDto } from './dto/cadastro-user.dto';
-import { LoginDto } from './dto/login-user.dto';
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
+import { UserService } from "src/modules/user/user.service";
+import { CadastroUserDto } from "./dto/cadastro-user.dto";
+import { LoginDto } from "./dto/login-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private jwtService: JwtService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
@@ -22,12 +22,12 @@ export class AuthService {
     });
 
     if (!email) {
-      throw new Error('usuário não encontrado');
+      throw new Error("usuário não encontrado");
     }
     const invalidPassword = await bcrypt.compare(password, user.password);
 
     if (!invalidPassword) {
-      throw new Error('Invalid Password');
+      throw new Error("Invalid Password");
     }
 
     return {
