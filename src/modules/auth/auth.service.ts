@@ -1,11 +1,11 @@
-import { User } from "@/modules/user/user.dto";
+import { CustomError } from "@/filters/CustomError.exception";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { UserService } from "src/modules/user/user.service";
-import { CadastroUserDto } from "./dto/cadastro-user.dto";
 import { LoginDto } from "./dto/login-user.dto";
+import { RegisterUserDto } from "./dto/register-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -13,16 +13,18 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private jwtService: JwtService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
-  async login(loginDto: LoginDto) {
+  async signIn(loginDto: LoginDto) {
     const { email, password } = loginDto;
+    if (!email || !password) throw new CustomError("E-mail or password are empty")
+
     const user = await this.prismaService.user.findUnique({
       where: { email },
     });
 
     if (!email) {
-      throw new Error("usuário não encontrado");
+      throw new Error("User not find");
     }
     const invalidPassword = await bcrypt.compare(password, user.password);
 
@@ -31,22 +33,30 @@ export class AuthService {
     }
 
     return {
+      email,
       token: this.jwtService.sign({ email }),
     };
   }
 
-  async cadastrar(criarDto: CadastroUserDto) {
-    const criarUsuario = new User();
-    criarUsuario.nome = criarDto.nome;
-    criarUsuario.email = criarDto.email;
-    criarUsuario.password = await bcrypt.hash(criarDto.password, 10);
-    criarUsuario.criadoEm = new Date();
-    criarUsuario.atualizadoEm = new Date();
+  async signUp(createDto: RegisterUserDto) {
+    const { name, email, password } = createDto;
+    console.log(password)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.userService.create(criarUsuario);
+    const user = await this.userService.create({
+      name,
+      email,
+      password: hashedPassword,
+      createdIn: new Date(),
+      updated: new Date(),
+    });
 
     return {
+      name,
+      email,
       token: this.jwtService.sign({ email: user.email }),
+      createdIn: user.createdIn,
+      updated: user.updated
     };
   }
 }

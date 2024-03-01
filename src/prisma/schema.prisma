@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-  id           String   @id @unique @default(uuid())
-  criadoEm     DateTime
-  atualizadoEm DateTime
+  id        String   @id @unique @default(uuid())
+  createdIn DateTime
+  updated   DateTime
 
   name     String
   email    String @unique

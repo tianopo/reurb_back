@@ -3,11 +3,11 @@ import { IsDateString, IsEmail, IsNotEmpty, IsString, Length } from "class-valid
 export class LoginDto {
   @IsNotEmpty({ message: "A data de criação é obrigatória." })
   @IsDateString({}, { message: "A data de criação deve ser uma string de data válida." })
-  criadoEm: Date | string;
+  createdIn: Date | string;
 
   @IsNotEmpty({ message: "A data de atualização é obrigatória." })
   @IsDateString({}, { message: "A data de atualização deve ser uma string de data válida." })
-  atualizadoEm: Date | string;
+  updated: Date | string;
 
   @IsEmail()
   email: string;

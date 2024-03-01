@@ -15,11 +15,11 @@ import { JwtStrategy } from "./jwt.strategy";
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: "process.env.JWT_SECRET",
+      secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: "1h",
       },
     }),
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

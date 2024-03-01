@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env" });
 
-export const ENV_API = {
+export const env = {
   versão_build: "1.0.0",
   projeto: process.env.PROJETO,
   nodeEnv: process.env.NODE_ENV,

@@ -1,17 +1,17 @@
 import { IsDateString, IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
 
-export class CadastroUserDto {
+export class RegisterUserDto {
   @IsNotEmpty({ message: "A data de criação é obrigatória." })
   @IsDateString({}, { message: "A data de criação deve ser uma string de data válida." })
-  criadoEm: Date | string;
+  createdIn: Date | string;
 
   @IsNotEmpty({ message: "A data de atualização é obrigatória." })
   @IsDateString({}, { message: "A data de atualização deve ser uma string de data válida." })
-  atualizadoEm: Date | string;
+  update: Date | string;
 
   @IsString()
   @Length(5, 10)
-  nome: string;
+  name: string;
 
   @IsString()
   @Length(6, 12)

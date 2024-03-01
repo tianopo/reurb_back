@@ -11,12 +11,12 @@ export class UserService {
   }
 
   async create(data: User) {
-    const existir = await this.prisma.user.findUnique({
+    const exist = await this.prisma.user.findUnique({
       where: {
         email: data.email,
       },
     });
-    if (existir) {
+    if (exist) {
       throw new ConflictException("email já existe");
     }
 

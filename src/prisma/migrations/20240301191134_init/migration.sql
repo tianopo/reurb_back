@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE `user` (
     `id` VARCHAR(191) NOT NULL,
-    `criadoEm` DATETIME(3) NOT NULL,
-    `atualizadoEm` DATETIME(3) NOT NULL,
+    `createdIn` DATETIME(3) NOT NULL,
+    `updated` DATETIME(3) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
