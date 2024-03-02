@@ -19,6 +19,7 @@ export class AuthService {
     if (!email || !password) throw new CustomError("Some attribute is empty")
 
     const user = await this.userService.findEmail(email);
+    if (!user) throw new CustomError("Email not found")
 
     const invalidPassword = await bcrypt.compare(password, user.password);
 
@@ -35,10 +36,12 @@ export class AuthService {
   async signUp(createDto: RegisterUserDto) {
     const { name, email, password } = createDto;
     if (!name || !email || !password) throw new CustomError("Some attribute is empty")
-    if (!Regex.email.test(email)) throw new CustomError('E-mail inválido')
+    if (!Regex.email.test(email)) throw new CustomError('Invalid E-mail')
+
+    const existEmail = await this.userService.findEmail(email)
+    if (existEmail) throw new CustomError('E-mail already registered')
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await this.userService.create({
       name,
       email,

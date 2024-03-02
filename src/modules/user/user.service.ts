@@ -1,12 +1,10 @@
 import { CustomError } from "@/filters/CustomError.exception";
+import { prisma } from "@/prisma/prismaConnection";
 import { Injectable } from "@nestjs/common";
 import { User } from "./user.dto";
-import { prisma } from "@/prisma/prismaConnection";
 
 @Injectable()
 export class UserService {
-  constructor() { }
-
   async findAll() {
     return prisma.user.findMany();
   }
@@ -23,8 +21,7 @@ export class UserService {
     const existEmail = await prisma.user.findUnique({
       where: { email },
     });
-    if (!existEmail) throw new CustomError("Email not found")
-
+    if (!existEmail) return undefined
     return existEmail
   }
 }
