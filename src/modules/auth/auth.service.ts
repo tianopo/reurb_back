@@ -1,11 +1,10 @@
-import { Regex } from "@/utils/regex";
+import { CustomError } from "@/exceptions/CustomError.filter";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { UserService } from "src/modules/user/user.service";
 import { LoginDto } from "./dto/loginUser.dto";
 import { RegisterUserDto } from "./dto/registerUser.dto";
-import { CustomError } from "@/exceptions/CustomError.filter";
 
 @Injectable()
 export class AuthService {
@@ -35,19 +34,12 @@ export class AuthService {
 
   async signUp(createDto: RegisterUserDto) {
     const { name, email, password } = createDto;
-    if (!name || !email || !password) throw new CustomError("Some attribute is empty")
-    if (!Regex.email.test(email)) throw new CustomError('Invalid E-mail')
-
-    const existEmail = await this.userService.findEmail(email)
-    if (existEmail) throw new CustomError('E-mail already registered')
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
       name,
       email,
       password: hashedPassword,
-      createdIn: undefined,
-      updated: undefined
     });
 
     return {

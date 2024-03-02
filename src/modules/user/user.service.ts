@@ -1,3 +1,4 @@
+import { CustomError } from "@/exceptions/CustomError.filter";
 import { prisma } from "@/prisma/prismaConnection";
 import { Injectable } from "@nestjs/common";
 import { User } from "./user.dto";
@@ -9,7 +10,8 @@ export class UserService {
   }
 
   async create(data: User) {
-    this.findEmail(data.email)
+    const existEmail = await this.findEmail(data.email)
+    if (existEmail) throw new CustomError('E-mail already registered')
 
     return prisma.user.create({
       data,
