@@ -6,6 +6,7 @@ CREATE TABLE `user` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
+    `role` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `user_id_key`(`id`),
     UNIQUE INDEX `user_email_key`(`email`),

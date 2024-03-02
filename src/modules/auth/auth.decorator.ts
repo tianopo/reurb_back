@@ -1,5 +1,5 @@
 import { RegexExp } from "@/utils/regexExp";
-import { Regex } from "./common/regex.decorator";
+import { Regex } from "../../decorators/regex.decorator";
 
 export function GetOneUppercase() {
   return Regex(

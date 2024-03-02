@@ -1,3 +1,4 @@
+import { Role } from "@/decorators/roles.decorator";
 import { CustomError } from "@/exceptions/CustomError.filter";
 import { prisma } from "@/prisma/prismaConnection";
 import { Injectable } from "@nestjs/common";
@@ -12,9 +13,15 @@ export class UserService {
   async create(data: User) {
     const existEmail = await this.findEmail(data.email)
     if (existEmail) throw new CustomError('E-mail already registered')
+    console.log(existEmail)
+    const countUser = await this.countUser()
+    const firstRole = countUser === 0 ? Role.Admin : Role.User;
 
     return prisma.user.create({
-      data,
+      data: {
+        ...data,
+        role: firstRole
+      }
     });
   }
 
@@ -24,5 +31,9 @@ export class UserService {
     });
     if (!existEmail) return undefined
     return existEmail
+  }
+
+  async countUser() {
+    return prisma.user.count()
   }
 }
