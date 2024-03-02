@@ -1,4 +1,4 @@
-import { GetOneUppercase, GetOneLowercase, GetOneSpecialCharacter, GetOneNumber, EmailFormat } from "@/decorators/auth.decorator";
+import { EmailFormat, GetOneLowercase, GetOneNumber, GetOneSpecialCharacter, GetOneUppercase } from "@/decorators/auth.decorator";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 
 export class LoginDto {

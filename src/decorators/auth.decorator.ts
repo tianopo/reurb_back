@@ -1,36 +1,35 @@
 import { Regex } from "@/utils/regex";
-import { IsRegexMatch } from "./isRegexMatch.decorator";
 
 export function GetOneUppercase() {
-  return IsRegexMatch(
+  return Regex(
     Regex.uppercase,
     { message: "Password without a uppercase character" }
   );
 }
 
 export function GetOneLowercase() {
-  return IsRegexMatch(
+  return Regex(
     Regex.lowcase,
     { message: "Password without a lowercase characters" }
   );
 }
 
 export function GetOneSpecialCharacter() {
-  return IsRegexMatch(
+  return Regex(
     Regex.special_character,
     { message: 'Password without a special character' }
   );
 }
 
 export function GetOneNumber() {
-  return IsRegexMatch(
+  return Regex(
     Regex.number,
     { message: "Password without a number" }
   );
 }
 
 export function EmailFormat() {
-  return IsRegexMatch(
+  return Regex(
     Regex.email,
     { message: "Invalid E-mail" }
   );

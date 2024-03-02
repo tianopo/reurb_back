@@ -1,6 +1,6 @@
 import { ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator';
 
-export const IsRegexMatch = (regex: RegExp, validationOptions?: ValidationOptions) => {
+export const Regex = (regex: RegExp, validationOptions?: ValidationOptions) => {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'isRegexMatch',
