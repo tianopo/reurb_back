@@ -1,9 +1,15 @@
+import { Optional } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { IsDate } from "class-validator";
 
 export class User implements Prisma.UserCreateInput {
   id?: string;
-  createdIn: Date | string;
-  updated: Date | string;
+  @Optional()
+  @IsDate()
+  createdIn: Date;
+  @Optional()
+  @IsDate()
+  updated = new Date();
 
   name: string;
   email: string;

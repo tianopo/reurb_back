@@ -1,4 +1,3 @@
-import { CustomError } from "@/filters/CustomError.exception";
 import { prisma } from "@/prisma/prismaConnection";
 import { Injectable } from "@nestjs/common";
 import { User } from "./user.dto";

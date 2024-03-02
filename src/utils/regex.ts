@@ -1,6 +1,6 @@
 export const Regex = {
-  capital: /[A-Z]/,
-  tiny: /[a-z]/,
+  uppercase: /[A-Z]/,
+  lowcase: /[a-z]/,
   special_character: /\W|_/,
   number: /[0-9]/,
   email:
