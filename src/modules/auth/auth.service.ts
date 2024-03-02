@@ -1,5 +1,5 @@
 import { CustomError } from "@/filters/CustomError.exception";
-import { PrismaService } from "@/prisma/prisma.service";
+import { Regex } from "@/utils/regex";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -10,22 +10,16 @@ import { RegisterUserDto } from "./dto/register-user.dto";
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaService: PrismaService,
     private jwtService: JwtService,
     private readonly userService: UserService,
   ) { }
 
   async signIn(loginDto: LoginDto) {
     const { email, password } = loginDto;
-    if (!email || !password) throw new CustomError("E-mail or password are empty")
+    if (!email || !password) throw new CustomError("Some attribute is empty")
 
-    const user = await this.prismaService.user.findUnique({
-      where: { email },
-    });
+    const user = await this.userService.findEmail(email);
 
-    if (!email) {
-      throw new Error("User not find");
-    }
     const invalidPassword = await bcrypt.compare(password, user.password);
 
     if (!invalidPassword) {
@@ -40,7 +34,9 @@ export class AuthService {
 
   async signUp(createDto: RegisterUserDto) {
     const { name, email, password } = createDto;
-    console.log(password)
+    if (!name || !email || !password) throw new CustomError("Some attribute is empty")
+    if (!Regex.email.test(email)) throw new CustomError('E-mail inválido')
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this.userService.create({

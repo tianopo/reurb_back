@@ -1,27 +1,30 @@
-import { PrismaService } from "@/prisma/prisma.service";
-import { ConflictException, Injectable } from "@nestjs/common";
+import { CustomError } from "@/filters/CustomError.exception";
+import { Injectable } from "@nestjs/common";
 import { User } from "./user.dto";
+import { prisma } from "@/prisma/prismaConnection";
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor() { }
 
   async findAll() {
-    return this.prisma.user.findMany();
+    return prisma.user.findMany();
   }
 
   async create(data: User) {
-    const exist = await this.prisma.user.findUnique({
-      where: {
-        email: data.email,
-      },
-    });
-    if (exist) {
-      throw new ConflictException("email já existe");
-    }
+    this.findEmail(data.email)
 
-    return this.prisma.user.create({
+    return prisma.user.create({
       data,
     });
+  }
+
+  async findEmail(email: string) {
+    const existEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!existEmail) throw new CustomError("Email not found")
+
+    return existEmail
   }
 }
