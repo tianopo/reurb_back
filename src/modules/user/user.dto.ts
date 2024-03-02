@@ -1,6 +1,6 @@
 import { EmailFormat, GetOneLowercase, GetOneNumber, GetOneSpecialCharacter, GetOneUppercase } from "@/decorators/auth.decorator";
-import { Nullable } from "@/decorators/nullable.decorator";
-import { UUID } from "@/decorators/uuid.decorator";
+import { Nullable } from "@/decorators/common/nullable.decorator";
+import { UUID } from "@/decorators/common/uuid.decorator";
 import { Optional } from "@nestjs/common";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 
