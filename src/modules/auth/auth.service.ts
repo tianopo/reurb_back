@@ -1,4 +1,3 @@
-import { CustomError } from "@/exceptions/CustomError.exception";
 import { Regex } from "@/utils/regex";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -6,6 +5,7 @@ import * as bcrypt from "bcrypt";
 import { UserService } from "src/modules/user/user.service";
 import { LoginDto } from "./dto/loginUser.dto";
 import { RegisterUserDto } from "./dto/registerUser.dto";
+import { CustomError } from "@/exceptions/CustomError.filter";
 
 @Injectable()
 export class AuthService {
