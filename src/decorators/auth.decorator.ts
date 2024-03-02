@@ -1,5 +1,5 @@
 import { Regex } from "@/utils/regex";
-import { IsRegexMatch } from "./IsRegexMatch.decorator";
+import { IsRegexMatch } from "./isRegexMatch.decorator";
 
 export function GetOneUppercase() {
   return IsRegexMatch(

@@ -15,16 +15,12 @@ export class AuthService {
 
   async signIn(loginDto: LoginDto) {
     const { email, password } = loginDto;
-    if (!email || !password) throw new CustomError("Some attribute is empty")
 
     const user = await this.userService.findEmail(email);
     if (!user) throw new CustomError("Email not found")
 
     const invalidPassword = await bcrypt.compare(password, user.password);
-
-    if (!invalidPassword) {
-      throw new Error("Invalid Password");
-    }
+    if (!invalidPassword) throw new Error("Invalid Password");
 
     return {
       email,

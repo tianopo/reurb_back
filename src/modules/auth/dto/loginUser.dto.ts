@@ -1,18 +1,17 @@
-import { IsDateString, IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
+import { GetOneUppercase, GetOneLowercase, GetOneSpecialCharacter, GetOneNumber, EmailFormat } from "@/decorators/auth.decorator";
+import { IsNotEmpty, IsString, Length } from "class-validator";
 
 export class LoginDto {
-  @IsNotEmpty({ message: "A data de criação é obrigatória." })
-  @IsDateString({}, { message: "A data de criação deve ser uma string de data válida." })
-  createdIn: Date | string;
-
-  @IsNotEmpty({ message: "A data de atualização é obrigatória." })
-  @IsDateString({}, { message: "A data de atualização deve ser uma string de data válida." })
-  updated: Date | string;
-
-  @IsEmail()
-  email: string;
-
+  @GetOneUppercase()
+  @GetOneLowercase()
+  @GetOneSpecialCharacter()
+  @GetOneNumber()
+  @IsNotEmpty()
   @IsString()
-  @Length(6, 12)
+  @Length(8, 30)
   password: string;
+
+  @IsNotEmpty()
+  @EmailFormat()
+  email: string;
 }
