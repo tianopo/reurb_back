@@ -1,4 +1,4 @@
-export const Regex = {
+export const RegexExp = {
   uppercase: /[A-Z]/,
   lowcase: /[a-z]/,
   special_character: /\W|_/,

@@ -1,36 +1,37 @@
-import { Regex } from "@/utils/regex";
+import { RegexExp } from "@/utils/regexExp";
+import { Regex } from "./common/regex.decorator";
 
 export function GetOneUppercase() {
   return Regex(
-    Regex.uppercase,
+    RegexExp.uppercase,
     { message: "Password without a uppercase character" }
   );
 }
 
 export function GetOneLowercase() {
   return Regex(
-    Regex.lowcase,
+    RegexExp.lowcase,
     { message: "Password without a lowercase characters" }
   );
 }
 
 export function GetOneSpecialCharacter() {
   return Regex(
-    Regex.special_character,
+    RegexExp.special_character,
     { message: 'Password without a special character' }
   );
 }
 
 export function GetOneNumber() {
   return Regex(
-    Regex.number,
+    RegexExp.number,
     { message: "Password without a number" }
   );
 }
 
 export function EmailFormat() {
   return Regex(
-    Regex.email,
+    RegexExp.email,
     { message: "Invalid E-mail" }
   );
 }
