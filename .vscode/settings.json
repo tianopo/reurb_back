@@ -10,14 +10,17 @@
   },
   "files.exclude": {
     "**/.git": true,
-    ".eslintrc.json": false,
+    ".eslintrc.json": true,
+    ".lintstagedrc.json": true,
+    ".eslintrc-commit.json": true,
     ".eslintignore": true,
     ".prettierrc": true,
     ".github": true,
-    ".tool-versions": true,
+    ".tool-versions": false,
     "tsconfig.app*": true,
     "nest-cli.json": true,
     ".swcrc": true,
+    ".husky": true,
   },
   "search.exclude": {
     "**/dist": true

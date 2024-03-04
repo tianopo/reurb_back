@@ -1,0 +1,11 @@
+{
+  "src/**/*.+(ts|tsx)": [
+    "eslint -c .eslintrc.json --fix"
+  ],
+  "src/**/*.+(js|jsx|ts|tsx|html|css)": [
+    "prettier --write"
+  ],
+  "src/**/*.+(js|json|ts|tsx)": [
+    "eslint -c .eslintrc-commit.json --fix"
+  ]
+}

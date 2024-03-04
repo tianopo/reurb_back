@@ -12,7 +12,9 @@
     "format": "eslint -c .eslintrc.json --fix --ext .ts,.tsx src && prettier --write 'src/**/*.+(js|jsx|ts|tsx|html|css)'",
     "check": "tsc",
     "migrate": "prisma migrate dev",
-    "createMigration": "prisma migrate dev --name init"
+    "createMigration": "prisma migrate dev --name init",
+    "pre-commit-lint": "npm-run-all --sequential lint-staged",
+    "prepare": "husky"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
@@ -72,5 +74,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "husky": "^9.0.11"
   }
 }
