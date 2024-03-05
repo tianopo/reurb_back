@@ -16,7 +16,6 @@ export class UserService {
 
     const countUser = await this.countUser();
     const firstRole = countUser === 0 ? Role.Admin : Role.User;
-
     return prisma.user.create({
       data: {
         ...data,
