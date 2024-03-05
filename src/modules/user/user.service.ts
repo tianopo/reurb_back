@@ -11,17 +11,17 @@ export class UserService {
   }
 
   async create(data: User) {
-    const existEmail = await this.findEmail(data.email)
-    if (existEmail) throw new CustomError('E-mail already registered')
-    console.log(existEmail)
-    const countUser = await this.countUser()
+    const existEmail = await this.findEmail(data.email);
+    if (existEmail) throw new CustomError("E-mail already registered");
+
+    const countUser = await this.countUser();
     const firstRole = countUser === 0 ? Role.Admin : Role.User;
 
     return prisma.user.create({
       data: {
         ...data,
-        role: firstRole
-      }
+        role: firstRole,
+      },
     });
   }
 
@@ -29,11 +29,11 @@ export class UserService {
     const existEmail = await prisma.user.findUnique({
       where: { email },
     });
-    if (!existEmail) return undefined
-    return existEmail
+    if (!existEmail) return undefined;
+    return existEmail;
   }
 
   async countUser() {
-    return prisma.user.count()
+    return prisma.user.count();
   }
 }

@@ -1,18 +1,20 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 allowed_user="tianopo"
 branch="$(git rev-parse --abbrev-ref HEAD)"
+git_user=$(git config --global user.name)
 
 if [ "$branch" = "main" ]; then
   if [ "$git_user" != "$allowed_user" ]; then
-  echo "######################################" 
-  echo "#"
-  echo "# NÃO PERMITIDO COMMITS NA BRANCH MAIN"
-  echo "#"
-  echo "# REALIZE UM GIT PULL NA MAIN E CRIE UMA BRANCH A PARTIR DELA"
-  echo "#"
-  echo "######################################"
-    exit 1
+    echo "######################################" 
+    echo "#"
+    echo "# NÃO PERMITIDO COMMITS NA BRANCH MAIN"
+    echo "#"
+    echo "# REALIZE UM GIT PULL NA MAIN E CRIE UMA BRANCH A PARTIR DELA"
+    echo "#"
+    echo "######################################"
+      exit 1
+  fi
+fi
 
 npm run pre-commit-lint
