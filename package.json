@@ -15,7 +15,9 @@
     "lintStaged": "npx --no-install lint-staged",
     "pre-commit-lint": "npm-run-all --parallel lintStaged",
     "prepare": "husky",
-    "check": "tsc"
+    "check": "tsc",
+    "test": "jest --passWithNoTests",
+    "build": "tsc && nest build"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
@@ -53,6 +55,7 @@
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-promise": "^6.1.1",
     "express": "^4.18.2",
+    "jest": "^29.7.0",
     "lint-staged": "^15.2.2",
     "nodemailer": "^6.9.9",
     "npm-run-all": "^4.1.5",
