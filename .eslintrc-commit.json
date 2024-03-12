@@ -45,6 +45,7 @@
     "no-duplicate-case": "error",
     "no-empty-pattern": "error",
     "no-undef": 0,
+    "no-useless-constructor": "off",
     "no-use-before-define": "off",
     "@typescript-eslint/no-empty-function": 1,
     "@typescript-eslint/no-explicit-any": 2,

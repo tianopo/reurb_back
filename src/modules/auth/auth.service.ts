@@ -11,16 +11,16 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   async signIn(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
     const user = await this.userService.findEmail(email);
-    if (!user) throw new CustomError("Email not found")
+    if (!user) throw new CustomError("Email not found");
 
     const invalidPassword = await bcrypt.compare(password, user.password);
-    if (!invalidPassword) throw new Error("Invalid Password");
+    if (!invalidPassword) throw new CustomError("Invalid Password");
 
     return {
       email,
@@ -36,7 +36,7 @@ export class AuthService {
       name,
       email,
       password: hashedPassword,
-      role
+      role,
     });
 
     return {
@@ -45,7 +45,7 @@ export class AuthService {
       role: user.role,
       token: this.jwtService.sign({ email: user.email }),
       createdIn: user.createdIn,
-      updated: user.updated
+      updated: user.updated,
     };
   }
 }

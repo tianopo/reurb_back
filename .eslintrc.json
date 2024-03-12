@@ -46,6 +46,7 @@
     "no-empty-pattern": "error", // desestruturação não pode ficar vazia: var {} = a;-> erro
     "no-undef": 0, // aviso de variáveis não declaradas como React
     "no-use-before-define": "off", // não será emitido aviso em var sendo usadas antes de declarar
+    "no-useless-constructor": "off",
     "@typescript-eslint/no-empty-function": 1, // avisa sobre funções vazias
     "@typescript-eslint/no-explicit-any": 2, // define aviso se encontrar o tipo 'any'
     "@typescript-eslint/prefer-nullish-coalescing": 0, // desativa o aviso de ?? em vez de ||

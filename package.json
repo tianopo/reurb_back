@@ -33,7 +33,7 @@
     "@nestjs/platform-express": "^10.3.3",
     "@nestjs/schematics": "^10.1.1",
     "@nestjs/throttler": "^5.1.2",
-    "@prisma/client": "^5.9.1",
+    "@prisma/client": "^5.11.0",
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.2",
     "@types/bcrypt": "^5.0.2",
