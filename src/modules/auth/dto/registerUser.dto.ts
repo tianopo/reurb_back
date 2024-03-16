@@ -1,7 +1,12 @@
-
 import { Role } from "@/decorators/roles.decorator";
 import { IsNotEmpty, IsString, Length } from "class-validator";
-import { EmailFormat, GetOneLowercase, GetOneNumber, GetOneSpecialCharacter, GetOneUppercase } from "../auth.decorator";
+import {
+  EmailFormat,
+  GetOneLowercase,
+  GetOneNumber,
+  GetOneSpecialCharacter,
+  GetOneUppercase,
+} from "../auth.decorator";
 
 export class RegisterUserDto {
   @IsNotEmpty()
@@ -22,5 +27,5 @@ export class RegisterUserDto {
   @EmailFormat()
   email: string;
 
-  role: Role[]
+  role: Role[];
 }

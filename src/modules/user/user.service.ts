@@ -35,4 +35,14 @@ export class UserService {
   async countUser() {
     return prisma.user.count();
   }
+
+  async findToken(token: string) {
+    if (token !== "") {
+      const existToken = await prisma.user.findFirst({
+        where: { token },
+      });
+      if (!existToken) throw new CustomError("There is no existing token");
+      return existToken;
+    } else return undefined;
+  }
 }

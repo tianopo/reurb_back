@@ -3,7 +3,13 @@ import { Role } from "@/decorators/roles.decorator";
 import { UUID } from "@/decorators/uuid.decorator";
 import { Optional } from "@nestjs/common";
 import { IsNotEmpty, IsString, Length } from "class-validator";
-import { EmailFormat, GetOneLowercase, GetOneNumber, GetOneSpecialCharacter, GetOneUppercase } from "../auth/auth.decorator";
+import {
+  EmailFormat,
+  GetOneLowercase,
+  GetOneNumber,
+  GetOneSpecialCharacter,
+  GetOneUppercase,
+} from "../auth/auth.decorator";
 
 export class User {
   @Optional()
@@ -30,5 +36,7 @@ export class User {
   @EmailFormat()
   email: string;
 
-  role: Role[]
+  token: string;
+
+  role: Role[];
 }
