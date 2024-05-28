@@ -1,6 +1,6 @@
-import { Nullable } from "@/decorators/nullable.decorator";
 import { Role } from "@/decorators/roles.decorator";
-import { UUID } from "@/decorators/uuid.decorator";
+import { UUID } from "@/decorators/validators/uuid.decorator";
+import { Nullable } from "@/decorators/validators/nullable.decorator";
 import { Optional } from "@nestjs/common";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import {
@@ -9,7 +9,7 @@ import {
   GetOneNumber,
   GetOneSpecialCharacter,
   GetOneUppercase,
-} from "../auth/auth.decorator";
+} from "../../decorators/validators/regex.decorator";
 
 export class User {
   @Optional()

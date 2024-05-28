@@ -1,6 +1,6 @@
 import { Role } from "@/decorators/roles.decorator";
-import { CustomError } from "@/exceptions/CustomError.filter";
-import { prisma } from "@/prisma/prismaConnection";
+import { CustomError } from "@/err/custom/Error.filter";
+import { prisma } from "@/prisma/prisma-connection";
 import { Injectable } from "@nestjs/common";
 import { User } from "./user.dto";
 
@@ -41,6 +41,7 @@ export class UserService {
       const existToken = await prisma.user.findFirst({
         where: { token },
       });
+
       if (!existToken) throw new CustomError("There is no existing token");
       return existToken;
     } else return undefined;

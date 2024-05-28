@@ -1,10 +1,11 @@
-import { CustomError } from "@/exceptions/CustomError.filter";
+import { CustomError } from "@/err/custom/Error.filter";
+import { UserService } from "@/modules/user/user.service";
+import { prisma } from "@/prisma/prisma-connection";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { UserService } from "src/modules/user/user.service";
-import { LoginDto } from "./dto/loginUser.dto";
-import { RegisterUserDto } from "./dto/registerUser.dto";
+import { LoginDto } from "./dto/login-user.dto";
+import { RegisterUserDto } from "./dto/register-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -46,5 +47,18 @@ export class AuthService {
       email,
       token,
     };
+  }
+
+  async logout(token: string) {
+    const user = await this.userService.findToken(token);
+
+    if (user) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { token: "" },
+      });
+    }
+
+    return true;
   }
 }

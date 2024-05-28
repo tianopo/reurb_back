@@ -1,7 +1,8 @@
 import { ValidationArguments, ValidationOptions, registerDecorator } from "class-validator";
 
+type value = string | null | undefined;
 interface CreateDecoratorsFunction {
-  (value: any, args?: ValidationArguments): boolean;
+  (value: value, args?: ValidationArguments): boolean;
 }
 
 interface CreateDecoratorsOptions {
@@ -9,15 +10,15 @@ interface CreateDecoratorsOptions {
   validationFunction: CreateDecoratorsFunction;
 }
 
-export function createCustomValidator({ name, validationFunction }: CreateDecoratorsOptions) {
-  return function (object: Object, propertyName: string, validationOptions?: ValidationOptions) {
+export function CustomCreateValidator({ name, validationFunction }: CreateDecoratorsOptions) {
+  return function (object: object, propertyName: string, validationOptions?: ValidationOptions) {
     registerDecorator({
       name,
       target: object.constructor,
       propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: value, args: ValidationArguments) {
           return validationFunction(value, args);
         },
       },

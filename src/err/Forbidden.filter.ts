@@ -4,6 +4,6 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 export class ForbiddenException extends HttpException {
   constructor(message: string) {
     super(message, HttpStatus.FORBIDDEN);
-    console.log(message)
+    console.log(message);
   }
 }

@@ -5,7 +5,7 @@ import {
   GetOneNumber,
   GetOneSpecialCharacter,
   GetOneUppercase,
-} from "../auth.decorator";
+} from "../../../decorators/validators/regex.decorator";
 
 export class LoginDto {
   @GetOneUppercase()
