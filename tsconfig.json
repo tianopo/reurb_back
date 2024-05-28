@@ -34,6 +34,7 @@
   "include": [
     "env.d.ts",
     "./src/**/*.ts",
+    "./src/prisma/prisma-connection.ts",
     "eslintrc.json"
   ],
   "exclude": [
