@@ -46,4 +46,18 @@ export class UserService {
       return existToken;
     } else return undefined;
   }
+
+  async update(user: User) {
+    const { id, ...data } = user;
+    if (!id) throw new CustomError("User ID is required for updating.");
+    const updated = new Date();
+
+    return prisma.user.update({
+      where: { id },
+      data: {
+        ...data,
+        updated,
+      },
+    });
+  }
 }

@@ -1,6 +1,6 @@
+import { Role } from "@/decorators/roles.decorator";
 import { CustomError } from "@/err/custom/Error.filter";
 import { UserService } from "@/modules/user/user.service";
-import { prisma } from "@/prisma/prisma-connection";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -23,9 +23,17 @@ export class AuthService {
     const invalidPassword = await bcrypt.compare(password, user.password);
     if (!invalidPassword) throw new CustomError("Invalid Password");
 
+    const token = this.jwtService.sign({ email });
+
+    await this.userService.update({
+      ...user,
+      role: user.role as Role,
+      token,
+    });
+
     return {
       email,
-      token: this.jwtService.sign({ email }),
+      token,
     };
   }
 
@@ -53,9 +61,10 @@ export class AuthService {
     const user = await this.userService.findToken(token);
 
     if (user) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { token: "" },
+      await this.userService.update({
+        ...user,
+        role: user.role as Role,
+        token: "",
       });
     }
 

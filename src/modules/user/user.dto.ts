@@ -1,7 +1,4 @@
 import { Role } from "@/decorators/roles.decorator";
-import { UUID } from "@/decorators/validators/uuid.decorator";
-import { Nullable } from "@/decorators/validators/nullable.decorator";
-import { Optional } from "@nestjs/common";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import {
   EmailFormat,
@@ -10,14 +7,9 @@ import {
   GetOneSpecialCharacter,
   GetOneUppercase,
 } from "../../decorators/validators/regex.decorator";
+import { UserFields } from "../user-fields.dto";
 
-export class User {
-  @Optional()
-  @IsString()
-  @UUID()
-  @Nullable()
-  id?: string;
-
+export class User extends UserFields {
   @IsNotEmpty()
   @IsString()
   @Length(1, 100)
@@ -38,5 +30,5 @@ export class User {
 
   token: string;
 
-  role: Role[];
+  role: Role;
 }

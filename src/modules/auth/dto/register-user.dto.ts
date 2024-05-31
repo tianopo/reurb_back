@@ -27,5 +27,5 @@ export class RegisterUserDto {
   @EmailFormat()
   email: string;
 
-  role: Role[];
+  role: Role;
 }
