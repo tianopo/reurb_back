@@ -60,14 +60,13 @@ export class AuthService {
   async logout(token: string) {
     const user = await this.userService.findToken(token);
 
-    if (user) {
+    if (user)
       await this.userService.update({
         ...user,
         role: user.role as Role,
         token: "",
       });
-    }
-
+    else return false;
     return true;
   }
 }

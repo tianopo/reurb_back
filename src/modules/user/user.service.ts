@@ -42,7 +42,7 @@ export class UserService {
         where: { token },
       });
 
-      if (!existToken) throw new CustomError("There is no existing token");
+      if (!existToken) return undefined;
       return existToken;
     } else return undefined;
   }
