@@ -1,3 +1,0 @@
-docker build --pull --rm -f "Dockerfile" -t <nome da imagem> "." = roda o docker
-docker build --pull --rm -f "Dockerfile" -t delivery:latest "." = exemplo
-cd /var/lib/docker/image = acessa a imagem no wsl do docker
