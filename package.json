@@ -17,7 +17,8 @@
     "prepare": "husky",
     "check": "tsc",
     "test": "jest --passWithNoTests",
-    "build": "tsc && nest build"
+    "build": "tsc && nest build",
+    "vercel-build": "npx prisma migrate deploy"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
