@@ -10,7 +10,7 @@
   },
   "files.exclude": {
     "**/.git": true,
-    ".eslintrc.json": false,
+    ".eslintrc.json": true,
     ".lintstagedrc.json": true,
     ".eslintrc-commit.json": true,
     ".eslintignore": true,

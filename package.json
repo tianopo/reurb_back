@@ -15,9 +15,9 @@
     "lintStaged": "npx --no-install lint-staged",
     "pre-commit-lint": "npm-run-all --parallel lintStaged",
     "prepare": "husky",
-    "check": "tsc",
+    "checked": "tsc",
     "test": "jest --passWithNoTests",
-    "build": "yarn clean && tsc -p tsconfig.json && nest build && prisma migrate deploy"
+    "build": "tsc -p tsconfig.json && nest build"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
