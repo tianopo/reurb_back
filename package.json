@@ -65,7 +65,6 @@
     "prettier-plugin-prisma": "^5.0.0",
     "prisma": "^5.9.1",
     "reflect-metadata": "^0.2.1",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1"
   },
