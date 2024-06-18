@@ -17,7 +17,7 @@
     "prepare": "husky",
     "check": "tsc",
     "test": "jest --passWithNoTests",
-    "build": "tsc && nest build && npx prisma migrate deploy"
+    "build": "tsc && -p tsconfig.build.json && node -r tsconfig-paths/register dist/main.js && nest build && npx prisma migrate deploy"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
@@ -65,6 +65,7 @@
     "prettier-plugin-prisma": "^5.0.0",
     "prisma": "^5.9.1",
     "reflect-metadata": "^0.2.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1"
   },
