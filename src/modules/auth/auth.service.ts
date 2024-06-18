@@ -1,11 +1,11 @@
-import { Role } from "@/decorators/roles.decorator";
-import { CustomError } from "@/err/custom/Error.filter";
-import { UserService } from "@/modules/user/user.service";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { LoginDto } from "./dto/login-user.dto";
 import { RegisterUserDto } from "./dto/register-user.dto";
+import { UserService } from "../user/user.service";
+import { CustomError } from "../../err/custom/Error.filter";
+import { Role } from "../../decorators/roles.decorator";
 
 @Injectable()
 export class AuthService {

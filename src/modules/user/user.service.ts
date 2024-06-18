@@ -1,7 +1,7 @@
-import { Role } from "@/decorators/roles.decorator";
-import { CustomError } from "@/err/custom/Error.filter";
-import { prisma } from "@/prisma/prisma-connection";
 import { Injectable } from "@nestjs/common";
+import { Role } from "../../decorators/roles.decorator";
+import { CustomError } from "../../err/custom/Error.filter";
+import { prisma } from "../../prisma/prisma-connection";
 import { User } from "./user.dto";
 
 @Injectable()

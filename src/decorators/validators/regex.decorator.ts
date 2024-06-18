@@ -1,4 +1,4 @@
-import { RegexExp } from "@/utils/regex-exp";
+import { RegexExp } from "../../utils/regex-exp";
 import { CustomCreateRegex } from "../custom/create-regex.decorator";
 
 const createRegexDecorator = (regex: RegExp, message: string) =>

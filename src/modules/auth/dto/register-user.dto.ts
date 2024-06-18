@@ -1,4 +1,3 @@
-import { Role } from "@/decorators/roles.decorator";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import {
   EmailFormat,
@@ -7,6 +6,7 @@ import {
   GetOneSpecialCharacter,
   GetOneUppercase,
 } from "../../../decorators/validators/regex.decorator";
+import { Role } from "../../../decorators/roles.decorator";
 
 export class RegisterUserDto {
   @IsNotEmpty()

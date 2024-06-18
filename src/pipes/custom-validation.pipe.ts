@@ -1,6 +1,6 @@
-import { CustomValidator } from "@/err/custom/Validator.filter";
 import { ValidationPipe } from "@nestjs/common";
 import { ValidationError } from "class-validator";
+import { CustomValidator } from "../err/custom/Validator.filter";
 
 export class CustomValidationPipe extends ValidationPipe {
   public createExceptionFactory() {

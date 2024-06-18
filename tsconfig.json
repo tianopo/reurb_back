@@ -24,11 +24,6 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": false,
     "noEmit": false,
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
   },
   "include": [
     "env.d.ts",

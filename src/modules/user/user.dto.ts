@@ -1,4 +1,3 @@
-import { Role } from "@/decorators/roles.decorator";
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import {
   EmailFormat,
@@ -8,6 +7,7 @@ import {
   GetOneUppercase,
 } from "../../decorators/validators/regex.decorator";
 import { UserFields } from "../user-fields.dto";
+import { Role } from "../../decorators/roles.decorator";
 
 export class User extends UserFields {
   @IsNotEmpty()
