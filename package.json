@@ -33,7 +33,7 @@
     "@nestjs/platform-express": "^10.3.3",
     "@nestjs/schematics": "^10.1.1",
     "@nestjs/throttler": "^5.1.2",
-    "@prisma/client": "^5.11.0",
+    "@prisma/client": "^5.15.1",
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.2",
     "@types/bcrypt": "^5.0.2",
@@ -63,7 +63,7 @@
     "passport-jwt": "^4.0.1",
     "prettier": "^3.2.5",
     "prettier-plugin-prisma": "^5.0.0",
-    "prisma": "^5.9.1",
+    "prisma": "^5.15.1",
     "reflect-metadata": "^0.2.1",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1"
