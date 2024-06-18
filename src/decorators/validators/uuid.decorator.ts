@@ -1,5 +1,5 @@
-import { CustomValidator } from "@/err/custom/Validator.filter";
 import { isUUID } from "class-validator";
+import { CustomValidator } from "../../err/custom/Validator.filter";
 import { CustomCreateValidator } from "../custom/create-validator.decorator";
 
 export const UUID = () => {
