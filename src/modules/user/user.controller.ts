@@ -9,4 +9,9 @@ export class UserController {
   async findToken(@Param("token") token: string) {
     return this.userService.findToken(token);
   }
+
+  @Get("/")
+  async test() {
+    return "Hello World";
+  }
 }
