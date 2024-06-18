@@ -17,7 +17,7 @@
     "prepare": "husky",
     "check": "tsc",
     "test": "jest --passWithNoTests",
-    "build": "tsc && nest build && prisma generate && prisma migrate deploy"
+    "build": "yarn clean && tsc -p tsconfig.json && nest build && prisma migrate deploy"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
