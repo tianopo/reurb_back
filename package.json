@@ -16,7 +16,8 @@
     "pre-commit-lint": "npm-run-all --parallel lintStaged",
     "prepare": "husky",
     "checked": "tsc",
-    "test": "jest --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "test:load": "artillery run tests/load/load-all.yml --output tests/reports/load.json",
     "vercel-build": "npx prisma migrate deploy",
     "build": "nest build"
