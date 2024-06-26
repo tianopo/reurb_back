@@ -4,6 +4,7 @@ dist
 build
 node_modules
 .env
+.tool-versions
 
 # yarn v2
 .yarn/cache

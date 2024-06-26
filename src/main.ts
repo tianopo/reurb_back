@@ -15,7 +15,7 @@ const bootstrap = async () => {
   };
 
   app.enableCors(cors);
-  await app.listen(process.env.BACKEND_PORT);
+  await app.listen(process.env.BACKEND_PORT ?? 3500);
 };
 
 bootstrap();
