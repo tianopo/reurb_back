@@ -18,7 +18,7 @@
     "checked": "tsc",
     "test": "jest --watch",
     "test:load": "artillery run tests/load/load-all.yml --output tests/reports/load.json",
-    "vercel-build": "tsc -p tsconfig.json && nest build",
+    "vercel-build": "npx prisma migrate deploy",
     "build": "nest build"
   },
   "prisma": {
