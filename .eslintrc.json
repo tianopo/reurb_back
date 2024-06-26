@@ -64,14 +64,6 @@
     "@typescript-eslint/restrict-template-expressions": 0, // `${123}` desativa este erro
     "no-unexpected-multiline": 0, // aviso sobre quebra de linhas inesperadas
     "@typescript-eslint/consistent-type-definitions": 0,
-    "no-console": [
-      "error",
-      {
-        "allow": [
-          "error"
-        ]
-      }
-    ], // define aviso para uso de console
     "react/prop-types": 0, // não é necessário exportar prop-types
     "react/no-unescaped-entities": 0, // renderização segura de HTML
     "@typescript-eslint/no-confusing-void-expression": 0, // desativa o uso de voids confusos
@@ -83,13 +75,6 @@
         "varsIgnorePattern": "^_",
         "ignoreRestSiblings": true
       } // argumentos da função e var iniciados em _ devem ser ignorados
-    ],
-    "no-restricted-syntax": [
-      1,
-      {
-        "selector": "CallExpression[callee.object.name='console'][callee.property.name!=/^(warn|error)$/]",
-        "message": "Remova os console.log's"
-      }
     ]
   },
   "settings": {

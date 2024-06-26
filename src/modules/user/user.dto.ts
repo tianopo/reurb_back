@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
+import { Role } from "../../decorators/roles.decorator";
 import {
   EmailFormat,
   GetOneLowercase,
@@ -6,10 +7,9 @@ import {
   GetOneSpecialCharacter,
   GetOneUppercase,
 } from "../../decorators/validators/regex.decorator";
-import { UserFields } from "../user-fields.dto";
-import { Role } from "../../decorators/roles.decorator";
+import { Required } from "../required.dto";
 
-export class User extends UserFields {
+export class UserEntity extends Required {
   @IsNotEmpty()
   @IsString()
   @Length(1, 100)

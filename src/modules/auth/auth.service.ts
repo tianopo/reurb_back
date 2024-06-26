@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { Role } from "../../decorators/roles.decorator";
+import { CustomError } from "../../err/custom/Error.filter";
+import { prisma } from "../../prisma/prisma-connection";
+import { UserService } from "../user/user.service";
 import { LoginDto } from "./dto/login-user.dto";
 import { RegisterUserDto } from "./dto/register-user.dto";
-import { UserService } from "../user/user.service";
-import { CustomError } from "../../err/custom/Error.filter";
-import { Role } from "../../decorators/roles.decorator";
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,9 @@ export class AuthService {
   async signIn(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    const user = await this.userService.findEmail(email);
+    const user = await prisma.user.findFirst({
+      where: { email: loginDto.email },
+    });
     if (!user) throw new CustomError("Email not found");
 
     const invalidPassword = await bcrypt.compare(password, user.password);
@@ -25,7 +28,7 @@ export class AuthService {
 
     const token = this.jwtService.sign({ email });
 
-    await this.userService.update({
+    await this.userService.updateToken({
       ...user,
       role: user.role as Role,
       token,
@@ -61,7 +64,7 @@ export class AuthService {
     const user = await this.userService.findToken(token);
 
     if (user)
-      await this.userService.update({
+      await this.userService.updateToken({
         ...user,
         role: user.role as Role,
         token: "",

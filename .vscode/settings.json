@@ -21,6 +21,7 @@
     "nest-cli.json": true,
     ".swcrc": true,
     ".husky": true,
+    "tsconfig.tsbuildinfo": true
   },
   "search.exclude": {
     "**/dist": true

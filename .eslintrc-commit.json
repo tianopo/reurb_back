@@ -15,7 +15,6 @@
         "**/err/**"
       ],
       "rules": {
-        "no-console": "off",
         "no-restricted-syntax": "off"
       }
     }
@@ -64,14 +63,6 @@
     "@typescript-eslint/restrict-template-expressions": 0,
     "no-unexpected-multiline": 0,
     "@typescript-eslint/consistent-type-definitions": 0,
-    "no-console": [
-      "error",
-      {
-        "allow": [
-          "error"
-        ]
-      }
-    ],
     "react/prop-types": 0,
     "react/no-unescaped-entities": 0,
     "@typescript-eslint/no-confusing-void-expression": 0,
@@ -82,13 +73,6 @@
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
         "ignoreRestSiblings": true
-      }
-    ],
-    "no-restricted-syntax": [
-      1,
-      {
-        "selector": "CallExpression[callee.object.name='console'][callee.property.name!=/^(warn|error)$/]",
-        "message": "Remova os console.log's"
       }
     ]
   },
