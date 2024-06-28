@@ -10,7 +10,7 @@ const bootstrap = async () => {
   app.useGlobalPipes(new CustomValidationPipe());
 
   const cors = {
-    origin: ["http://localhost:8999"],
+    origin: [process.env.FRONTEND_HOST],
     methods: "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
   };
 
