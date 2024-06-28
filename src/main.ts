@@ -12,6 +12,8 @@ const bootstrap = async () => {
   const cors = {
     origin: [process.env.FRONTEND_HOST],
     methods: "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
+    allowedHeaders: "Content-Type,Authorization",
+    credentials: true,
   };
 
   app.enableCors(cors);
