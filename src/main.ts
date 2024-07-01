@@ -1,6 +1,5 @@
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
-import cors from "cors";
 import * as dotenv from "dotenv";
 import { AppModule } from "./modules/app.module";
 import { CustomValidationPipe } from "./pipes/custom-validation.pipe";
@@ -17,7 +16,7 @@ const bootstrap = async () => {
     credentials: true,
   };
 
-  app.use(cors(corsOptions));
+  app.enableCors(corsOptions);
 
   await app.listen(process.env.BACKEND_PORT ?? 3500);
 };
