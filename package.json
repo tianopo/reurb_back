@@ -19,7 +19,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:load": "artillery run tests/load/load-all.yml --output tests/reports/load.json",
-    "build": "nest build && prisma generate"
+    "build": "nest build && prisma generate",
+    "vercel-build": "npm run build"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
