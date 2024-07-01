@@ -19,5 +19,6 @@
         "OPTIONS"
       ]
     }
-  ]
+  ],
+  "buildCommand": "npm run build"
 }
