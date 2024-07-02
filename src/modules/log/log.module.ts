@@ -1,8 +1,8 @@
 // src/log/log.module.ts
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
-import { LogService } from "./log.service";
 import { LogController } from "./log.controller";
-import { LoggingMiddleware } from "../../middleware/logging.middleware";
+import { LogService } from "./log.service";
+import { LoggingMiddleware } from "./logging.middleware";
 
 @Module({
   providers: [LogService],
