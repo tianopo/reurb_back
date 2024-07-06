@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { prisma } from "../../config/prisma-connection";
 import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
-import { prisma } from "../../prisma/prisma-connection";
 import { UserService } from "../user/user.service";
 import { LoginDto } from "./dto/login-user.dto";
 import { RegisterUserDto } from "./dto/register-user.dto";

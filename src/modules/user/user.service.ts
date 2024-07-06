@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
+import { prisma } from "../../config/prisma-connection";
+import { redis } from "../../config/redis";
 import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
-import { prisma } from "../../prisma/prisma-connection";
 import { UserEntity } from "./user.dto";
 
 @Injectable()
@@ -13,7 +14,11 @@ export class UserService {
     });
     if (existEmail) throw new CustomError("E-mail already registered");
 
-    const countUser = await this.countUser();
+    const cacheCount = JSON.parse(await redis.get("users")).length;
+    console.log(cacheCount);
+    let countUser;
+    if (cacheCount === 0) countUser = await this.countUser();
+    else countUser = cacheCount;
     const firstRole = countUser === 0 ? Role.Admin : Role.User;
     return prisma.user.create({
       data: {
@@ -49,7 +54,19 @@ export class UserService {
   }
 
   async list() {
-    return prisma.user.findMany();
+    const cache = await redis.get("users");
+    const isCacheStale = !(await redis.get("users:validation"));
+    const data = await prisma.user.findMany();
+
+    setTimeout(async () => {
+      await redis.set("users", JSON.stringify(data));
+      await redis.get("users:validation", true);
+    });
+    if (cache) return JSON.parse(cache);
+
+    await redis.set("users", JSON.stringify(data));
+
+    return data;
   }
 
   async delete(id: string) {
