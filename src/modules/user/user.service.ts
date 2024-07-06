@@ -4,6 +4,7 @@ import { prisma } from "../../config/prisma-connection";
 import { redis } from "../../config/redis";
 import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
+import { cacheStale } from "../../utils/cacheStale";
 import { UserEntity } from "./user.dto";
 
 @Injectable()
@@ -55,13 +56,10 @@ export class UserService {
 
   async list() {
     const cache = await redis.get("users");
-    const isCacheStale = !(await redis.get("users:validation"));
     const data = await prisma.user.findMany();
 
-    setTimeout(async () => {
-      await redis.set("users", JSON.stringify(data));
-      await redis.get("users:validation", true);
-    });
+    cacheStale("users", data);
+
     if (cache) return JSON.parse(cache);
 
     await redis.set("users", JSON.stringify(data));
