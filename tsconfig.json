@@ -29,7 +29,6 @@
     "env.d.ts",
     "./src/**/*.ts",
     "src/config/prisma-connection.ts",
-    "eslintrc.json"
   ],
   "exclude": [
     "node_modules",

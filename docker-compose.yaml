@@ -1,6 +1,6 @@
 version: '3'
 services:
-  postgres_first:
+  postgres_reurb:
     image: postgres:latest
     container_name: postgres_${DATABASE_DATABASE}
     restart: always

@@ -8,10 +8,12 @@ import { UserService } from "./user.service";
   providers: [UserService],
   exports: [UserService],
   imports: [
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100,
-    }]),
-  ]
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
+  ],
 })
-export class UserModule { }
+export class UserModule {}
