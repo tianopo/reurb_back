@@ -1,18 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { UserEntity } from "./user.dto";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/auth.guard";
+import { UserDto } from "./dto/user.dto";
 import { UserService } from "./user.service";
 
+@UseGuards(JwtAuthGuard)
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() data: UserEntity) {
-    return this.userService.create(data);
+  async create(@Body() data: UserDto) {
+    return this.userService.createUser(data);
   }
 
   @Put(":id")
-  async update(@Param("id") id: string, @Body() data: UserEntity) {
+  async update(@Param("id") id: string, @Body() data: UserDto) {
     return this.userService.update(id, data);
   }
 
@@ -29,10 +31,5 @@ export class UserController {
   @Get(":token")
   async findToken(@Param("token") token: string) {
     return this.userService.findToken(token);
-  }
-
-  @Get("/")
-  async test() {
-    return "Hello World";
   }
 }

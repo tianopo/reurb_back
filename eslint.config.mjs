@@ -78,4 +78,12 @@ export default [...compat.extends(
         "no-console": "off",
         "no-restricted-syntax": "off",
     },
-}];
+},
+{
+    // Override for specific files or directories
+    files: ["src/modules/user/user.service.ts"],
+    rules: {
+        "@typescript-eslint/no-explicit-any": "off",
+    },
+},
+];

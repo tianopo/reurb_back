@@ -10,7 +10,7 @@
   },
   "files.exclude": {
     "**/.git": true,
-    ".eslint.config.mjs": true,
+    "eslint.config.mjs": false,
     ".lintstagedrc.json": true,
     ".prettierrc": true,
     ".github": true,

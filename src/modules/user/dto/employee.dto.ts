@@ -1,33 +1,51 @@
-import { IsNotEmpty, IsString, Length, MaxLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Length, MaxLength } from "class-validator";
 import { Role } from "../../../decorators/roles.decorator";
 import {
+  CPFFormat,
   EmailFormat,
   GetOneLowercase,
   GetOneNumber,
   GetOneSpecialCharacter,
   GetOneUppercase,
 } from "../../../decorators/validators/regex.decorator";
+import { Required } from "../../required.dto";
 
-export class RegisterUserDto {
+export class EmployeeDto extends Required {
   @IsNotEmpty()
   @IsString()
-  @Length(1, 100)
+  @Length(1, 255)
   nome: string;
 
   @GetOneUppercase()
   @GetOneLowercase()
   @GetOneSpecialCharacter()
   @GetOneNumber()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Length(6, 30)
-  senha: string;
+  senha?: string;
 
   @IsNotEmpty()
   @EmailFormat()
-  @Length(1, 255)
   @IsString()
+  @Length(1, 255)
   email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(14)
+  @CPFFormat()
+  cpf: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100)
+  profissao: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(15)
+  telefone: string;
 
   @IsNotEmpty()
   @IsString()

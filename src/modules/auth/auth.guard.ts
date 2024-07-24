@@ -1,7 +1,8 @@
-import { ExecutionContext, UnauthorizedException } from "@nestjs/common";
+import { ExecutionContext } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { UnauthorizedException } from "../../err/Unathorized.filter";
 
-export class JwtAthGuard extends AuthGuard("jwt") {
+export class JwtAuthGuard extends AuthGuard("jwt") {
   canActivate(context: ExecutionContext) {
     return super.canActivate(context);
   }
@@ -9,7 +10,7 @@ export class JwtAthGuard extends AuthGuard("jwt") {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   handleRequest(err: Error, user: any) {
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw err || new UnauthorizedException("Usuário não autorizado");
     }
     return user;
   }

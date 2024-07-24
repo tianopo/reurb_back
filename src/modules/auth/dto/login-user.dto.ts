@@ -14,10 +14,12 @@ export class LoginDto {
   @GetOneNumber()
   @IsNotEmpty()
   @IsString()
-  @Length(8, 30)
-  password: string;
+  @Length(6, 30)
+  senha: string;
 
   @IsNotEmpty()
   @EmailFormat()
+  @Length(1, 255)
+  @IsString()
   email: string;
 }

@@ -16,24 +16,24 @@ export class AuthService {
   ) {}
 
   async signIn(loginDto: LoginDto) {
-    const { email, password } = loginDto;
+    const { email, senha } = loginDto;
 
     const user = await prisma.user.findFirst({
       where: { email: loginDto.email },
     });
-    if (!user) throw new CustomError("Email not found");
+    if (!user) throw new CustomError("Email não encontrado");
 
-    const invalidPassword = await bcrypt.compare(password, user.password);
-    if (!invalidPassword) throw new CustomError("Invalid Password");
+    const invalidPassword = await bcrypt.compare(senha, user.senha);
+    if (!invalidPassword) throw new CustomError("Senha inválida");
 
     const token = this.jwtService.sign({ email });
 
     await this.userService.updateToken({
       ...user,
-      role: user.role as Role,
+      acesso: user.acesso as Role,
       token,
     });
-
+    console.log(token);
     return {
       email,
       token,
@@ -41,17 +41,17 @@ export class AuthService {
   }
 
   async signUp(createDto: RegisterUserDto) {
-    const { name, email, password, role } = createDto;
+    const { nome, email, senha, acesso } = createDto;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(senha, 10);
     const token = this.jwtService.sign({ email });
 
-    await this.userService.create({
-      name,
+    await this.userService.createUser({
+      nome,
       email,
       token,
-      password: hashedPassword,
-      role,
+      senha: hashedPassword,
+      acesso,
     });
 
     return {
@@ -61,13 +61,12 @@ export class AuthService {
   }
 
   async logout(token: string) {
-    console.log(token, "oi");
     const user = await this.userService.findToken(token);
 
     if (user)
       await this.userService.updateToken({
         ...user,
-        role: user.role as Role,
+        acesso: user.acesso as Role,
         token: "",
       });
     else return false;
