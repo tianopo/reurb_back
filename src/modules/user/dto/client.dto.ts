@@ -48,9 +48,6 @@ export class ClientDto extends Required {
   @MaxLength(15)
   telefone: string;
 
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(20)
   acesso: Role;
 
   @IsNotEmpty()

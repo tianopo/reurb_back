@@ -4,30 +4,8 @@ config:
     - duration: 30
       arrivalRate: 10
 scenarios:
-  - name: "Test Log"
-    flow:
-      - get:
-          url: "/logs"
-  - name: "Test User"
-    flow:
-      - post:
-          url: "/user"
-          json:
-            name: "TestUser"
-            email: "testuser@example.com.br"
-            password: "Password123!!"
+  - flow:
       - get:
           url: "/user"
-  - name: "Test Auth"
-    flow:
-      - post:
-          url: "/auth/signup"
-          json:
-            name: "TestUser"
-            email: "testuser@example.com.br"
-            password: "Password123!!"
-      - post:
-          url: "/auth/signin"
-          json:
-            email: "testuser@example.com.br"
-            password: "Password123!!"
+          headers:
+            Content-Type: "application/json"

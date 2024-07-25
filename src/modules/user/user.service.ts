@@ -15,6 +15,7 @@ export class UserService {
     await this.validateUniqueFields(data);
     const countUser = await this.countUser();
     const firstRole = countUser === 0 ? Role.Admin : Role.Cliente;
+
     return prisma.user.create({
       data: {
         ...data,
@@ -83,11 +84,14 @@ export class UserService {
   }
 
   async list() {
-    const cache = await redis.get("users");
+    const cacheKey = "users";
+    const cache = await redis.get(cacheKey);
+
     const data = await prisma.user.findMany();
-    cacheStale("users", data);
+    cacheStale(cacheKey, data, "dynamic");
+
     if (cache) return JSON.parse(cache);
-    await redis.set("users", JSON.stringify(data));
+    await redis.set(cacheKey, JSON.stringify(data));
 
     return data;
   }
@@ -129,71 +133,52 @@ export class UserService {
   async validateUniqueFields(data: any, userId?: string) {
     const { email, cpf, rg, cpfConjuge, rgConjuge, emailConjuge } = data;
 
+    const conditions: any[] = [];
+
+    if (email) conditions.push({ email });
+    if (cpf) conditions.push({ cpf });
+    if (rg) conditions.push({ rg });
+    if (cpfConjuge) conditions.push({ cpfConjuge });
+    if (rgConjuge) conditions.push({ rgConjuge });
+    if (emailConjuge) conditions.push({ emailConjuge });
+
+    const andConditions: any[] = [];
+
+    if (conditions.length > 0) {
+      andConditions.push({ OR: conditions });
+    }
+
     if (userId) {
-      const userIdVerification = await prisma.user.findUnique({
-        where: { id: userId },
-      });
-      if (!userIdVerification) throw new CustomError(`ID de funcionário ${userId} não encontrado`);
+      andConditions.push({ id: { not: userId } });
     }
 
-    if (email) {
-      const existingEmail = await prisma.user.findFirst({
-        where: {
-          email,
-          AND: userId ? { id: { not: userId } } : undefined,
-        },
-      });
-      if (existingEmail) throw new CustomError("E-mail já existe");
-    }
+    try {
+      await prisma.$transaction(async (prisma) => {
+        if (userId) {
+          const userExists = await prisma.user.findUnique({ where: { id: userId } });
+          if (!userExists) throw new CustomError("Id não existe");
+        }
 
-    if (cpf) {
-      const existingCPF = await prisma.user.findFirst({
-        where: {
-          cpf,
-          AND: userId ? { id: { not: userId } } : undefined,
-        },
-      });
-      if (existingCPF) throw new CustomError("CPF já foi registrado");
-    }
+        const existingUsers = await prisma.user.findMany({
+          where: {
+            AND: andConditions.length > 0 ? andConditions : undefined,
+          },
+        });
 
-    if (rg) {
-      const existingRG = await prisma.user.findFirst({
-        where: {
-          rg,
-          AND: userId ? { id: { not: userId } } : undefined,
-        },
+        for (const user of existingUsers) {
+          if (email && user.email === email) throw new CustomError("E-mail já existe");
+          if (cpf && user.cpf === cpf) throw new CustomError("CPF já foi registrado");
+          if (rg && user.rg === rg) throw new CustomError("RG já foi registrado");
+          if (cpfConjuge && user.cpfConjuge === cpfConjuge)
+            throw new CustomError("CPF do cônjuge já foi registrado");
+          if (rgConjuge && user.rgConjuge === rgConjuge)
+            throw new CustomError("RG do cônjuge já foi registrado");
+          if (emailConjuge && user.emailConjuge === emailConjuge)
+            throw new CustomError("E-mail do cônjuge já foi registrado");
+        }
       });
-      if (existingRG) throw new CustomError("RG já foi registrado");
-    }
-
-    if (cpfConjuge) {
-      const existingCpfConjuge = await prisma.user.findFirst({
-        where: {
-          cpfConjuge,
-          AND: userId ? { id: { not: userId } } : undefined,
-        },
-      });
-      if (existingCpfConjuge) throw new CustomError("CPF do cônjuge já foi registrado");
-    }
-
-    if (rgConjuge) {
-      const existingRgConjuge = await prisma.user.findFirst({
-        where: {
-          rgConjuge,
-          AND: userId ? { id: { not: userId } } : undefined,
-        },
-      });
-      if (existingRgConjuge) throw new CustomError("RG do cônjuge já foi registrado");
-    }
-
-    if (emailConjuge) {
-      const existingEmailConjuge = await prisma.user.findFirst({
-        where: {
-          emailConjuge,
-          AND: userId ? { id: { not: userId } } : undefined,
-        },
-      });
-      if (existingEmailConjuge) throw new CustomError("E-mail do cônjuge já foi registrado");
+    } catch (error) {
+      throw new CustomError(error.message);
     }
   }
 }

@@ -54,3 +54,21 @@ CREATE UNIQUE INDEX "user_cpfConjuge_key" ON "user"("cpfConjuge");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_emailConjuge_key" ON "user"("emailConjuge");
+
+-- CreateIndex
+CREATE INDEX "user_email_idx" ON "user"("email");
+
+-- CreateIndex
+CREATE INDEX "user_cpf_idx" ON "user"("cpf");
+
+-- CreateIndex
+CREATE INDEX "user_rg_idx" ON "user"("rg");
+
+-- CreateIndex
+CREATE INDEX "user_cpfConjuge_idx" ON "user"("cpfConjuge");
+
+-- CreateIndex
+CREATE INDEX "user_rgConjuge_idx" ON "user"("rgConjuge");
+
+-- CreateIndex
+CREATE INDEX "user_emailConjuge_idx" ON "user"("emailConjuge");

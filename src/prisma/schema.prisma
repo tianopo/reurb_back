@@ -43,5 +43,11 @@ model User {
   telefoneConjuge    String?  @db.VarChar(15)
   emailConjuge       String?  @unique
 
+  @@index([email])
+  @@index([cpf])
+  @@index([rg])
+  @@index([cpfConjuge])
+  @@index([rgConjuge])
+  @@index([emailConjuge])
   @@map("user")
 }
