@@ -1,8 +1,8 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString, Length, MaxLength } from "class-validator";
 import { Role } from "../../../decorators/roles.decorator";
 import {
+  CEPFormat,
   CPFFormat,
-  EmailFormat,
   GetOneLowercase,
   GetOneNumber,
   GetOneSpecialCharacter,
@@ -10,6 +10,9 @@ import {
   RGFormat,
 } from "../../../decorators/validators/regex.decorator";
 import { Required } from "../../required.dto";
+
+type TipoDeContrato = "Procuração" | "Contrato" | "Requerimento Reurb" | "Memorando";
+type EstadoCivil = "Solteiro" | "Casado" | "União Estável" | "Separado" | "Divorciado" | "Viúvo";
 
 export class ClientDto extends Required {
   @IsNotEmpty()
@@ -27,7 +30,11 @@ export class ClientDto extends Required {
   senha?: string;
 
   @IsNotEmpty()
-  @EmailFormat()
+  @IsString()
+  @MaxLength(20)
+  tiposDeContrato: TipoDeContrato;
+
+  @IsNotEmpty()
   @IsString()
   @Length(1, 255)
   email: string;
@@ -59,10 +66,11 @@ export class ClientDto extends Required {
   @IsNotEmpty()
   @IsString()
   @MaxLength(25)
-  estadoCivil: string;
+  estadoCivil: EstadoCivil;
 
   @IsNotEmpty()
   @IsString()
+  @CEPFormat()
   @MaxLength(20)
   cep: string;
 

@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { prisma } from "../../config/prisma-connection";
-import { redis } from "../../config/redis";
 import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
-import { cacheStale } from "../../utils/cacheStale";
 import { ClientDto } from "./dto/client.dto";
 import { EmployeeDto } from "./dto/employee.dto";
 import { UserDto } from "./dto/user.dto";
@@ -19,6 +17,7 @@ export class UserService {
     return prisma.user.create({
       data: {
         ...data,
+        status: true,
         acesso: firstRole,
       },
     });
@@ -29,6 +28,7 @@ export class UserService {
     return prisma.user.create({
       data: {
         ...data,
+        status: true,
         acesso: Role.Funcionario,
         senha: "12345678",
         token: "",
@@ -41,6 +41,7 @@ export class UserService {
     return prisma.user.create({
       data: {
         ...data,
+        status: false,
         acesso: Role.Cliente,
         senha: "12345678",
         token: "",
@@ -84,16 +85,28 @@ export class UserService {
   }
 
   async list() {
-    const cacheKey = "users";
-    const cache = await redis.get(cacheKey);
+    // const cacheKey = "users";
+    // const cache = await redis.get(cacheKey);
 
     const data = await prisma.user.findMany();
-    cacheStale(cacheKey, data, "dynamic");
+    // cacheStale(cacheKey, data, "dynamic");
 
-    if (cache) return JSON.parse(cache);
-    await redis.set(cacheKey, JSON.stringify(data));
+    // if (cache) return JSON.parse(cache);
+    // await redis.set(cacheKey, JSON.stringify(data));
 
     return data;
+  }
+
+  async getId(id: string) {
+    if (!id) throw new CustomError("ID de usuário é obrigatório.");
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) throw new CustomError("Usuário não encontrado.");
+
+    return user;
   }
 
   async delete(id: string) {

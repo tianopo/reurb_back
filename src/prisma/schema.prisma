@@ -25,6 +25,7 @@ model User {
   rg                 String?  @unique @db.VarChar(12)
   estadoCivil        String?  @db.VarChar(25)
   cep                String?  @db.VarChar(20)
+  tiposDeContrato    String?  @db.VarChar(20)
   rua                String?  @db.VarChar(255)
   numero             String?  @db.VarChar(25)
   bairro             String?  @db.VarChar(100)
@@ -42,6 +43,8 @@ model User {
   profissaoConjuge   String?  @db.VarChar(100)
   telefoneConjuge    String?  @db.VarChar(15)
   emailConjuge       String?  @unique
+  //status
+  status             Boolean
 
   @@index([email])
   @@index([cpf])

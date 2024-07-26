@@ -14,6 +14,7 @@ CREATE TABLE "user" (
     "rg" VARCHAR(12),
     "estadoCivil" VARCHAR(25),
     "cep" VARCHAR(20),
+    "tiposDeContrato" VARCHAR(20),
     "rua" VARCHAR(255),
     "numero" VARCHAR(25),
     "bairro" VARCHAR(100),
@@ -30,6 +31,7 @@ CREATE TABLE "user" (
     "profissaoConjuge" VARCHAR(100),
     "telefoneConjuge" VARCHAR(15),
     "emailConjuge" TEXT,
+    "status" BOOLEAN NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
