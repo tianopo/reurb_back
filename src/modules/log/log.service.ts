@@ -7,6 +7,7 @@ export class LogService {
 
   create(log: LogDto) {
     this.logs.push({ ...log });
+    if (this.logs.length >= 10) this.logs.splice(0, 10);
   }
 
   list(): LogDto[] {
