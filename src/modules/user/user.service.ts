@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 import { prisma } from "../../config/prisma-connection";
 import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
@@ -25,12 +26,13 @@ export class UserService {
 
   async createEmployee(data: EmployeeDto) {
     await this.validateUniqueFields(data);
+    const senha = await bcrypt.hash("Abcd123!", 10);
     return prisma.user.create({
       data: {
         ...data,
         status: true,
         acesso: Role.Funcionario,
-        senha: "12345678",
+        senha,
         token: "",
       },
     });
@@ -38,12 +40,13 @@ export class UserService {
 
   async createClient(data: ClientDto) {
     await this.validateUniqueFields(data);
+    const senha = await bcrypt.hash("Abcd123!", 10);
     return prisma.user.create({
       data: {
         ...data,
         status: false,
         acesso: Role.Cliente,
-        senha: "12345678",
+        senha,
         token: "",
       },
     });

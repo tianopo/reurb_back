@@ -22,6 +22,7 @@ export class AuthService {
       where: { email: loginDto.email },
     });
     if (!user) throw new CustomError("Email não encontrado");
+    if (!user.status) throw new CustomError("Seu cadastro está desativado");
 
     const invalidPassword = await bcrypt.compare(senha, user.senha);
     if (!invalidPassword) throw new CustomError("Senha inválida");

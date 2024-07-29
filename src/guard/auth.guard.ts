@@ -1,6 +1,6 @@
 import { ExecutionContext } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { UnauthorizedException } from "../../err/Unathorized.filter";
+import { UnauthorizedException } from "../err/Unathorized.filter";
 
 export class JwtAuthGuard extends AuthGuard("jwt") {
   canActivate(context: ExecutionContext) {
