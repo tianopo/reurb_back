@@ -154,4 +154,5 @@ export class ClientDto extends Required {
   @IsEmail()
   @MaxLength(255)
   emailConjuge?: string;
+  status?: boolean | string;
 }

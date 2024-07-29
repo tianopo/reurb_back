@@ -48,4 +48,5 @@ export class EmployeeDto extends Required {
   telefone: string;
 
   acesso: Role;
+  status?: boolean | string;
 }

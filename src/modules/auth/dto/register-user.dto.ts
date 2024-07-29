@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
-import { Role } from "../../../decorators/roles.decorator";
 import {
   EmailFormat,
   GetOneLowercase,
@@ -28,6 +27,4 @@ export class RegisterUserDto {
   @Length(1, 255)
   @IsString()
   email: string;
-
-  acesso: Role;
 }

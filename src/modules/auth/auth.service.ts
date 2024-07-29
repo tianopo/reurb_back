@@ -22,7 +22,8 @@ export class AuthService {
       where: { email: loginDto.email },
     });
     if (!user) throw new CustomError("Email não encontrado");
-    if (!user.status) throw new CustomError("Seu cadastro está desativado");
+    if (!user.status && !["Master", "Admin"].includes(user.acesso))
+      throw new CustomError("Seu cadastro está desativado");
 
     const invalidPassword = await bcrypt.compare(senha, user.senha);
     if (!invalidPassword) throw new CustomError("Senha inválida");
@@ -34,15 +35,19 @@ export class AuthService {
       acesso: user.acesso as Role,
       token,
     });
-    console.log(token);
+
     return {
       email,
+      acesso: user.acesso,
       token,
     };
   }
 
   async signUp(createDto: RegisterUserDto) {
-    const { nome, email, senha, acesso } = createDto;
+    const { nome, email, senha } = createDto;
+
+    const countUser = await this.userService.countUser();
+    const acesso = countUser === 0 ? Role.Master : Role.Cliente;
 
     const hashedPassword = await bcrypt.hash(senha, 10);
     const token = this.jwtService.sign({ email });
@@ -57,6 +62,7 @@ export class AuthService {
 
     return {
       email,
+      acesso,
       token,
     };
   }

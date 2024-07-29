@@ -1,14 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { RolesGuard } from "../../config/roles.guard";
-import { Role, Roles } from "../../decorators/roles.decorator";
 import { JwtAuthGuard } from "../../guard/auth.guard";
+import { RolesGuard } from "../../guard/roles.guard";
 import { ClientDto } from "./dto/client.dto";
 import { EmployeeDto } from "./dto/employee.dto";
 import { UserDto } from "./dto/user.dto";
 import { UserService } from "./user.service";
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller("user")
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -18,7 +17,6 @@ export class UserController {
   }
 
   @Post("employee")
-  @Roles(Role.Admin, Role.Master, Role.Funcionario)
   async createEmployee(@Body() data: EmployeeDto) {
     return this.userService.createEmployee(data);
   }
@@ -34,13 +32,11 @@ export class UserController {
   }
 
   @Put("employee/:id")
-  @Roles(Role.Admin, Role.Master, Role.Funcionario)
   async updateEmployee(@Param("id") id: string, @Body() data: EmployeeDto) {
     return this.userService.updateEmployee(id, data);
   }
 
   @Put("client/:id")
-  @Roles(Role.Admin, Role.Master, Role.Cliente)
   async updateClient(@Param("id") id: string, @Body() data: ClientDto) {
     return this.userService.updateClient(id, data);
   }
@@ -56,7 +52,6 @@ export class UserController {
   }
 
   @Delete(":id")
-  @Roles(Role.Admin, Role.Master)
   async delete(@Param("id") id: string) {
     return this.userService.delete(id);
   }

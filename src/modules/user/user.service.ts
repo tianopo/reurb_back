@@ -12,14 +12,11 @@ import { UserDto } from "./dto/user.dto";
 export class UserService {
   async createUser(data: UserDto) {
     await this.validateUniqueFields(data);
-    const countUser = await this.countUser();
-    const firstRole = countUser === 0 ? Role.Admin : Role.Cliente;
 
     return prisma.user.create({
       data: {
         ...data,
         status: true,
-        acesso: firstRole,
       },
     });
   }
@@ -73,7 +70,10 @@ export class UserService {
 
     return prisma.user.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        status: data.status === "Ativado" ? true : false,
+      },
     });
   }
 
@@ -83,17 +83,18 @@ export class UserService {
 
     return prisma.user.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        status: data.status === "Ativado" ? true : false,
+      },
     });
   }
 
   async list() {
     // const cacheKey = "users";
     // const cache = await redis.get(cacheKey);
-
     const data = await prisma.user.findMany();
     // cacheStale(cacheKey, data, "dynamic");
-
     // if (cache) return JSON.parse(cache);
     // await redis.set(cacheKey, JSON.stringify(data));
 
@@ -102,11 +103,9 @@ export class UserService {
 
   async getId(id: string) {
     if (!id) throw new CustomError("ID de usuário é obrigatório.");
-
     const user = await prisma.user.findUnique({
       where: { id },
     });
-
     if (!user) throw new CustomError("Usuário não encontrado.");
 
     return user;
@@ -114,7 +113,6 @@ export class UserService {
 
   async delete(id: string) {
     if (!id) throw new CustomError("Usuário ID não foi encontrado");
-
     return prisma.user.delete({ where: { id } });
   }
 
