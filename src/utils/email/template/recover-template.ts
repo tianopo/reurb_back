@@ -1,4 +1,9 @@
-export const termsTemplate = (name: string, email: string, phone: string, cep: string): string => {
+export const recoverTemplate = (
+  name: string,
+  email: string,
+  phone: string,
+  cep: string,
+): string => {
   return `
     <html>
       <head>

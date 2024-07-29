@@ -5,11 +5,11 @@ import {
   PhoneFormat,
 } from "../../../decorators/validators/regex.decorator";
 
-export class ReceiveMembershipDto {
+export class MembershipDto {
   @IsNotEmpty()
   @IsString()
   @Length(1, 100)
-  name: string;
+  nome: string;
 
   @IsNotEmpty()
   @IsString()
@@ -19,10 +19,10 @@ export class ReceiveMembershipDto {
   @IsNotEmpty()
   @IsString()
   @PhoneFormat()
-  phone: string;
+  telefone: string;
 
   @IsNotEmpty()
   @IsString()
   @CEPFormat()
-  CEP: string;
+  cep: string;
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { ReceiveMembershipDto } from "./dto/receive-membership.dto";
+import { MembershipDto } from "./dto/membership.dto";
 import { SendEmailService } from "./send-email.service";
 
 @Controller("send")
@@ -10,8 +10,8 @@ export class SendEmailController {
     return this.recoverPasswordService.recoverPassword();
   }
 
-  @Post("receive-membership")
-  receiveMembership(@Body() data: ReceiveMembershipDto) {
+  @Post("send-membership")
+  sendMembership(@Body() data: MembershipDto) {
     return this.recoverPasswordService.sendMembership(data);
   }
 }
