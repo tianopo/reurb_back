@@ -65,6 +65,7 @@ export class UserService {
   }
 
   async updateEmployee(id: string, data: EmployeeDto) {
+    console.log("oi");
     if (!id) throw new CustomError("ID de usuário é obrigatório para atualizar.");
     await this.validateUniqueFields(data, id);
 
