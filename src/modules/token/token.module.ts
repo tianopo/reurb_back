@@ -13,7 +13,7 @@ import { TokenService } from "./token.service";
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: "1h",
+        expiresIn: "15m",
       },
     }),
   ],

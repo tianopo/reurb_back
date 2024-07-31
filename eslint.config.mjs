@@ -80,6 +80,15 @@ export default [...compat.extends(
     },
 },
 {
+    files: ["**/*.service.ts"],
+    rules: {
+        "max-lines": ["error", {
+            max: 400,
+        }],
+        "@typescript-eslint/no-explicit-any": "off",
+    },
+},
+{
     // Override for specific files or directories
     files: ["src/modules/user/user.service.ts"],
     rules: {

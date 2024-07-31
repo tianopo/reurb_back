@@ -18,7 +18,7 @@ export class SendEmailService {
   }
   async forgotPassword(data: ForgotPasswordDto) {
     const { email } = data;
-    console.log(email);
+
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (!userExists) throw new CustomError("E-mail não existe");
 
