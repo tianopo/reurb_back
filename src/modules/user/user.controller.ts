@@ -3,6 +3,7 @@ import { JwtAuthGuard } from "../../guard/auth.guard";
 import { RolesGuard } from "../../guard/roles.guard";
 import { ClientDto } from "./dto/client.dto";
 import { EmployeeDto } from "./dto/employee.dto";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
 import { UserDto } from "./dto/user.dto";
 import { UserService } from "./user.service";
 
@@ -29,6 +30,11 @@ export class UserController {
   @Put(":id")
   async update(@Param("id") id: string, @Body() data: UserDto) {
     return this.userService.update(id, data);
+  }
+
+  @Put("recover-password")
+  async updateRecoverPassword(@Body() data: RecoverPasswordDto) {
+    return this.userService.updateRecoverPassword(data);
   }
 
   @Put("employee/:id")

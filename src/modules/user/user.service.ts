@@ -6,6 +6,7 @@ import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
 import { ClientDto } from "./dto/client.dto";
 import { EmployeeDto } from "./dto/employee.dto";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
 import { UserDto } from "./dto/user.dto";
 
 @Injectable()
@@ -64,8 +65,25 @@ export class UserService {
     });
   }
 
+  async updateRecoverPassword(data: RecoverPasswordDto) {
+    const { email, senha } = data;
+    const userExists = await prisma.user.findUnique({ where: { email } });
+    if (!userExists) throw new CustomError("E-mail não existe");
+
+    const hashedPassword = await bcrypt.hash(senha, 10);
+    const updated = new Date();
+
+    return prisma.user.update({
+      where: { email },
+      data: {
+        ...data,
+        senha: hashedPassword,
+        updated,
+      },
+    });
+  }
+
   async updateEmployee(id: string, data: EmployeeDto) {
-    console.log("oi");
     if (!id) throw new CustomError("ID de usuário é obrigatório para atualizar.");
     await this.validateUniqueFields(data, id);
 

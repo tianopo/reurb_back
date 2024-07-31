@@ -1,9 +1,4 @@
-export const recoverTemplate = (
-  name: string,
-  email: string,
-  phone: string,
-  cep: string,
-): string => {
+export const recoverTemplate = (email: string, page: string): string => {
   return `
     <html>
       <head>
@@ -69,10 +64,8 @@ export const recoverTemplate = (
           <p>Link para recuperação de senha</p>
           <div class="details">
             <ul>
-              <li><strong>Nome:</strong> ${name}</li>
               <li><strong>E-mail:</strong> ${email}</li>
-              <li><strong>Telefone:</strong> ${phone}</li>
-              <li><strong>CEP:</strong> ${cep}</li>
+              <li><strong>Acesse:</strong><a href="${page}">Link será expirado em 15 minutos</li>
             </ul>
           </div>
           <p>Obrigado por se juntar a nós!</p>
