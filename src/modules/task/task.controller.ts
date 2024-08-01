@@ -21,27 +21,30 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
+  @Roles(Role.Master, Role.Admin)
   create(@Body() data: TaskDto) {
     return this.taskService.create(data);
   }
 
   @Get()
-  @Roles(Role.Master)
   list(@Headers("authorization") authorization: string) {
     return this.taskService.list(authorization);
   }
 
   @Get(":id")
+  @Roles(Role.Master, Role.Admin)
   findOne(@Param("id") id: string) {
     return this.taskService.findOne(id);
   }
 
   @Put(":id")
+  @Roles(Role.Master, Role.Admin)
   update(@Param("id") id: string, @Body() updateTaskDto: TaskDto) {
     return this.taskService.update(id, updateTaskDto);
   }
 
   @Delete(":id")
+  @Roles(Role.Master, Role.Admin)
   remove(@Param("id") id: string) {
     return this.taskService.remove(id);
   }

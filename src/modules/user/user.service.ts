@@ -131,7 +131,7 @@ export class UserService {
   }
 
   async delete(id: string) {
-    if (!id) throw new CustomError("Usuário ID não foi encontrado");
+    if (!id) throw new CustomError("Usuário ID é obrigatório");
     return prisma.user.delete({ where: { id } });
   }
 
