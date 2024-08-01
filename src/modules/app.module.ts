@@ -1,20 +1,13 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
-import { RolesGuard } from "../guard/roles.guard";
 import { CorsMiddleware } from "../middleware/cors.middleware";
 import { AuthModule } from "./auth/auth.module";
 import { LogModule } from "./log/log.module";
 import { SendEmailModule } from "./send-email/send-email.module";
+import { TaskModule } from "./task/task.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
-  imports: [AuthModule, UserModule, LogModule, SendEmailModule],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-  ],
+  imports: [AuthModule, UserModule, LogModule, SendEmailModule, TaskModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

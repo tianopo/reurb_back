@@ -14,7 +14,6 @@ export class TokenService {
     try {
       const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
       if (!payload) throw new CustomError("Tipo de token inválido");
-
       return payload;
     } catch (error) {
       throw new CustomError("´Token inválido ou expirado");

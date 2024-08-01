@@ -14,6 +14,8 @@ export const GetOneNumber = () => createRegexDecorator(RegexExp.number, "Senha s
 export const EmailFormat = () => createRegexDecorator(RegexExp.email, "E-mail inválido");
 export const DateFormat = () =>
   createRegexDecorator(RegexExp["DD/MM/YYYY"], "Formato de data inválido");
+export const DateHourFormat = () =>
+  createRegexDecorator(RegexExp.date_hour, "Formato de data inválido");
 export const RGFormat = () => createRegexDecorator(RegexExp.rg_mask, "Formato de RG inválido");
 export const PhoneFormat = () =>
   createRegexDecorator(RegexExp.phone_mask, "Formato de telefone inválido");

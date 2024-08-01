@@ -28,7 +28,11 @@ export class AuthService {
     const invalidPassword = await bcrypt.compare(senha, user.senha);
     if (!invalidPassword) throw new CustomError("Senha inválida");
 
-    const token = this.jwtService.sign({ email });
+    const token = this.jwtService.sign({
+      email,
+      id: user.id,
+      acesso: user.acesso,
+    });
 
     await this.userService.updateToken({
       ...user,
@@ -50,14 +54,19 @@ export class AuthService {
     const acesso = countUser === 0 ? Role.Master : Role.Cliente;
 
     const hashedPassword = await bcrypt.hash(senha, 10);
-    const token = this.jwtService.sign({ email });
 
-    await this.userService.createUser({
+    const user = await this.userService.createUser({
       nome,
       email,
-      token,
+      token: "token provisório",
       senha: hashedPassword,
       acesso,
+    });
+
+    const token = this.jwtService.sign({
+      email,
+      id: user.id,
+      acesso: user.acesso,
     });
 
     return {
