@@ -12,7 +12,6 @@ export class TaskService {
 
   async create(data: TaskDto) {
     await this.validateUsersExist(data.funcionarios);
-
     const task = {
       descricao: data.descricao,
       data: new Date(data.data),
@@ -41,7 +40,7 @@ export class TaskService {
       },
     };
 
-    if (funcionario.acesso === Role.Master)
+    if ([Role.Master, Role.Admin].includes(funcionario.acesso))
       return prisma.task.findMany({ include: includefuncionarios });
     else
       return prisma.task.findMany({
