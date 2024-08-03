@@ -1,12 +1,4 @@
-import {
-  ArrayNotEmpty,
-  IsArray,
-  IsDateString,
-  IsIn,
-  IsNotEmpty,
-  IsString,
-  Length,
-} from "class-validator";
+import { IsArray, IsDateString, IsIn, IsNotEmpty, IsString, Length } from "class-validator";
 import { DateHourFormat } from "../../../decorators/validators/regex.decorator";
 import { Required } from "../../required.dto";
 
@@ -26,14 +18,12 @@ export class TaskDto extends Required {
   prioridade: string;
 
   @IsString()
-  @IsNotEmpty()
-  projeto: string;
+  projeto?: string;
 
   @IsString()
-  @IsIn(["A Fazer", "Feito", "Atrasado"])
+  @IsIn(["à Fazer", "Atrasados", "Feitos"])
   status: string;
 
   @IsArray()
-  @ArrayNotEmpty()
-  userIds: string[];
+  funcionarios?: string[];
 }

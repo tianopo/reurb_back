@@ -11,7 +11,7 @@ export class TaskService {
   constructor(private readonly tokenService: TokenService) {}
 
   async create(data: TaskDto) {
-    await this.validateUsersExist(data.userIds);
+    await this.validateUsersExist(data.funcionarios);
 
     const task = {
       descricao: data.descricao,
@@ -19,8 +19,8 @@ export class TaskService {
       prioridade: data.prioridade,
       projeto: data.projeto,
       status: data.status,
-      users: {
-        connect: data.userIds.map((userId) => ({ id: userId })),
+      funcionarios: {
+        connect: data.funcionarios.map((funcionario) => ({ id: funcionario })),
       },
     };
 
@@ -29,10 +29,10 @@ export class TaskService {
 
   async list(authorization: string) {
     const token = authorization.replace("Bearer ", "");
-    const user = await this.tokenService.validateToken(token);
+    const funcionario = await this.tokenService.validateToken(token);
 
-    const includeUsers = {
-      users: {
+    const includefuncionarios = {
+      funcionarios: {
         select: {
           id: true,
           nome: true,
@@ -41,15 +41,16 @@ export class TaskService {
       },
     };
 
-    if (user.acesso === Role.Master) return prisma.task.findMany({ include: includeUsers });
+    if (funcionario.acesso === Role.Master)
+      return prisma.task.findMany({ include: includefuncionarios });
     else
       return prisma.task.findMany({
         where: {
-          users: {
-            some: { id: user.id },
+          funcionarios: {
+            some: { id: funcionario.id },
           },
         },
-        include: includeUsers,
+        include: includefuncionarios,
       });
   }
 
@@ -62,7 +63,8 @@ export class TaskService {
     await this.validateId(id);
     await this.validateTaskExists(id);
 
-    if (data.userIds && data.userIds.length > 0) await this.validateUsersExist(data.userIds);
+    if (data.funcionarios && data.funcionarios.length > 0)
+      await this.validateUsersExist(data.funcionarios);
 
     return prisma.task.update({
       where: { id },
@@ -72,8 +74,8 @@ export class TaskService {
         prioridade: data.prioridade,
         projeto: data.projeto,
         status: data.status,
-        users: {
-          connect: data.userIds?.map((userId) => ({ id: userId })) || [],
+        funcionarios: {
+          connect: data.funcionarios?.map((funcionario) => ({ id: funcionario })) || [],
         },
       },
     });
@@ -90,11 +92,11 @@ export class TaskService {
     return task;
   }
 
-  private async validateUsersExist(userIds: string[]): Promise<void> {
+  private async validateUsersExist(funcionarios: string[]): Promise<void> {
     const users = await prisma.user.findMany({
-      where: { id: { in: userIds } },
+      where: { id: { in: funcionarios } },
     });
-    if (users.length !== userIds.length) {
+    if (users.length !== funcionarios.length) {
       throw new CustomError("Um ou mais usuários não existem.");
     }
   }

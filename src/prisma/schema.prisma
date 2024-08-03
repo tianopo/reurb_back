@@ -68,7 +68,7 @@ model Task {
   projeto    String   @db.VarChar(255)
   status     String   @db.VarChar(20)
 
-  users User[] @relation("TaskUsers")
+  funcionarios User[] @relation("TaskUsers")
 
   @@map("task")
 }

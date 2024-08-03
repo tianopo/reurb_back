@@ -57,6 +57,11 @@ export class UserController {
     return await this.userService.getId(id);
   }
 
+  @Get("employee/funcionario")
+  async getEmployees() {
+    return this.userService.getEmployees();
+  }
+
   @Delete(":id")
   async delete(@Param("id") id: string) {
     return this.userService.delete(id);

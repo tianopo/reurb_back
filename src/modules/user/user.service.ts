@@ -130,6 +130,14 @@ export class UserService {
     return user;
   }
 
+  async getEmployees() {
+    return await prisma.user.findMany({
+      where: {
+        acesso: Role.Funcionario,
+      },
+    });
+  }
+
   async delete(id: string) {
     if (!id) throw new CustomError("Usuário ID é obrigatório");
     return prisma.user.delete({ where: { id } });
