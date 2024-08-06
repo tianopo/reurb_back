@@ -1,5 +1,5 @@
 {
-  "name": "first-backend",
+  "name": "reurb",
   "private": true,
   "version": "1.0.0",
   "main": "index.js",
@@ -19,7 +19,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:load": "artillery run tests/load/load-all.yml --output tests/reports/load.json",
-    "build": "nest build && prisma migrate deploy && prisma generate",
+    "build": "prisma generate && prisma migrate deploy && nest build",
     "vercel-build": "npm run build"
   },
   "prisma": {

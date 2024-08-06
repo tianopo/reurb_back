@@ -5,6 +5,7 @@ import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
 import { TokenService } from "../token/token.service";
 import { TaskDto } from "./dto/task.dto";
+import { TaskUpdateDto } from "./dto/taskUpdate.dto";
 
 @Injectable()
 export class TaskService {
@@ -58,12 +59,11 @@ export class TaskService {
     return this.validateTaskExists(id);
   }
 
-  async update(id: string, data: TaskDto) {
+  async update(id: string, data: TaskUpdateDto) {
     await this.validateId(id);
     await this.validateTaskExists(id);
-
-    if (data.funcionarios && data.funcionarios.length > 0)
-      await this.validateUsersExist(data.funcionarios);
+    const ids = data.funcionarios.map((f) => f.id);
+    if (data.funcionarios && data.funcionarios.length > 0) await this.validateUsersExist(ids);
 
     return prisma.task.update({
       where: { id },
@@ -74,7 +74,7 @@ export class TaskService {
         projeto: data.projeto,
         status: data.status,
         funcionarios: {
-          connect: data.funcionarios?.map((funcionario) => ({ id: funcionario })) || [],
+          connect: data.funcionarios?.map((funcionario) => ({ id: funcionario.id })) || [],
         },
       },
     });

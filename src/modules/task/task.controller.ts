@@ -14,6 +14,7 @@ import { JwtAuthGuard } from "../../guard/auth.guard";
 import { RolesGuard } from "../../guard/roles.guard";
 import { TaskDto } from "./dto/task.dto";
 import { TaskService } from "./task.service";
+import { TaskUpdateDto } from "./dto/taskUpdate.dto";
 
 @Controller("task")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -39,7 +40,7 @@ export class TaskController {
 
   @Put(":id")
   @Roles(Role.Master, Role.Admin)
-  update(@Param("id") id: string, @Body() updateTaskDto: TaskDto) {
+  update(@Param("id") id: string, @Body() updateTaskDto: TaskUpdateDto) {
     return this.taskService.update(id, updateTaskDto);
   }
 
