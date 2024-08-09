@@ -84,6 +84,7 @@ model Project {
   descricao      String @db.VarChar(255)
   valorTotal     String @db.VarChar(255)
   valorAcumulado String @db.VarChar(255)
+  dataInicio     String @db.VarChar(255)
 
   tarefas       Task[]          @relation
   funcionarios  User[]          @relation("ProjectEmployees")
