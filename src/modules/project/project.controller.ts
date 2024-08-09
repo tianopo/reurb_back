@@ -12,41 +12,40 @@ import {
 import { Role, Roles } from "../../decorators/roles.decorator";
 import { JwtAuthGuard } from "../../guard/auth.guard";
 import { RolesGuard } from "../../guard/roles.guard";
-import { TaskDto } from "./dto/task.dto";
-import { TaskUpdateDto } from "./dto/taskUpdate.dto";
-import { TaskService } from "./task.service";
+import { ProjectDto } from "./dto/project.dto";
+import { ProjectService } from "./project.service";
 
-@Controller("task")
+@Controller("project")
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+export class ProjectController {
+  constructor(private readonly projectService: ProjectService) {}
 
   @Post()
   @Roles(Role.Gestor, Role.Admin)
-  create(@Body() data: TaskDto) {
-    return this.taskService.create(data);
+  create(@Body() data: ProjectDto) {
+    return this.projectService.create(data);
   }
 
   @Get()
   list(@Headers("authorization") authorization: string) {
-    return this.taskService.list(authorization);
+    return this.projectService.list(authorization);
   }
 
   @Get(":id")
   @Roles(Role.Gestor, Role.Admin)
-  findOne(@Param("id") id: string) {
-    return this.taskService.findOne(id);
+  getId(@Param("id") id: string) {
+    return this.projectService.getId(id);
   }
 
   @Put(":id")
   @Roles(Role.Gestor, Role.Admin)
-  update(@Param("id") id: string, @Body() updateTaskDto: TaskUpdateDto) {
-    return this.taskService.update(id, updateTaskDto);
+  update(@Param("id") id: string, @Body() data: ProjectDto) {
+    return this.projectService.update(id, data);
   }
 
   @Delete(":id")
   @Roles(Role.Gestor, Role.Admin)
   remove(@Param("id") id: string) {
-    return this.taskService.remove(id);
+    return this.projectService.remove(id);
   }
 }

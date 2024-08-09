@@ -4,7 +4,7 @@ export enum Role {
   Cliente = "Cliente",
   Funcionario = "Funcionário",
   Admin = "Admin",
-  Master = "Master",
+  Gestor = "Gestor",
 }
 
 export const ROLES_KEY = "acesso";

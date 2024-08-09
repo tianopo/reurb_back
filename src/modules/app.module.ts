@@ -5,9 +5,10 @@ import { LogModule } from "./log/log.module";
 import { SendEmailModule } from "./send-email/send-email.module";
 import { TaskModule } from "./task/task.module";
 import { UserModule } from "./user/user.module";
+import { ProjectModule } from "./project/project.module";
 
 @Module({
-  imports: [AuthModule, UserModule, LogModule, SendEmailModule, TaskModule],
+  imports: [AuthModule, UserModule, LogModule, SendEmailModule, TaskModule, ProjectModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

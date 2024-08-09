@@ -22,7 +22,7 @@ export class AuthService {
       where: { email: loginDto.email },
     });
     if (!user) throw new CustomError("Email não encontrado");
-    if (!user.status && !["Master", "Admin"].includes(user.acesso))
+    if (!user.status && !["Gestor", "Admin"].includes(user.acesso))
       throw new CustomError("Seu cadastro está desativado");
 
     const invalidPassword = await bcrypt.compare(senha, user.senha);
@@ -51,7 +51,7 @@ export class AuthService {
     const { nome, email, senha } = createDto;
 
     const countUser = await this.userService.countUser();
-    const acesso = countUser === 0 ? Role.Master : Role.Cliente;
+    const acesso = countUser === 0 ? Role.Gestor : Role.Cliente;
 
     const hashedPassword = await bcrypt.hash(senha, 10);
 

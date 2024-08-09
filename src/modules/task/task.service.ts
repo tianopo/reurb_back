@@ -17,7 +17,7 @@ export class TaskService {
       descricao: data.descricao,
       data: new Date(data.data),
       prioridade: data.prioridade,
-      projeto: data.projeto,
+      projeto: data.projetoId ? { connect: { id: data.projetoId } } : undefined,
       status: data.status,
       funcionarios: {
         connect: data.funcionarios.map((funcionario) => ({ id: funcionario })),
@@ -29,7 +29,7 @@ export class TaskService {
 
   async list(authorization: string) {
     const token = authorization.replace("Bearer ", "");
-    const funcionario = await this.tokenService.validateToken(token);
+    const user = await this.tokenService.validateToken(token);
 
     const includefuncionarios = {
       funcionarios: {
@@ -41,13 +41,13 @@ export class TaskService {
       },
     };
 
-    if ([Role.Master, Role.Admin].includes(funcionario.acesso))
+    if ([Role.Gestor, Role.Admin].includes(user.acesso))
       return prisma.task.findMany({ include: includefuncionarios });
     else
       return prisma.task.findMany({
         where: {
           funcionarios: {
-            some: { id: funcionario.id },
+            some: { id: user.id },
           },
         },
         include: includefuncionarios,
@@ -71,7 +71,7 @@ export class TaskService {
         descricao: data.descricao,
         data: new Date(data.data),
         prioridade: data.prioridade,
-        projeto: data.projeto,
+        projeto: data.projetoId ? { connect: { id: data.projetoId } } : undefined,
         status: data.status,
         funcionarios: {
           connect: data.funcionarios?.map((funcionario) => ({ id: funcionario.id })) || [],
