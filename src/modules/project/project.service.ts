@@ -5,21 +5,34 @@ import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
 import { TokenService } from "../token/token.service";
 import { ProjectDto } from "./dto/project.dto";
+import { ProjectUpdateDto } from "./dto/projectUpdate.dto";
 
 @Injectable()
 export class ProjectService {
   constructor(private readonly tokenService: TokenService) {}
   async create(data: ProjectDto) {
-    const { nome, descricao, valorTotal, valorAcumulado, funcionarios, clientes, contribuicoes } =
-      data;
-
+    const {
+      nome,
+      descricao,
+      valorTotal,
+      valorAcumulado,
+      dataInicio,
+      status,
+      funcionarios,
+      clientes,
+      contribuicoes,
+    } = data;
+    await this.validateAcumulateTotal(valorAcumulado, valorTotal);
     await this.validateUsersExist(funcionarios, clientes);
+
     const create = await prisma.project.create({
       data: {
         nome,
         descricao,
         valorTotal,
         valorAcumulado,
+        dataInicio,
+        status,
         funcionarios: {
           connect: funcionarios?.map((funcionario) => ({ id: funcionario })),
         },
@@ -44,13 +57,45 @@ export class ProjectService {
     const token = authorization.replace("Bearer ", "");
     const user = await this.tokenService.validateToken(token);
 
+    const including = {
+      funcionarios: {
+        select: {
+          id: true,
+          nome: true,
+        },
+      },
+      clientes: {
+        select: {
+          id: true,
+          nome: true,
+        },
+      },
+      contributions: {
+        select: {
+          userId: true,
+          valor: true,
+        },
+      },
+    };
+
     if ([Role.Gestor, Role.Admin].includes(user.acesso)) {
-      return prisma.project.findMany();
+      return prisma.project.findMany({
+        include: {
+          funcionarios: including.funcionarios,
+          clientes: including.clientes,
+          contributions: including.contributions,
+        },
+      });
     } else if (user.acesso === Role.Cliente) {
       return prisma.user.findMany({
         where: {
           projetosCli: {
             some: { id: user.id },
+          },
+        },
+        include: {
+          projetosCli: {
+            include: including,
           },
         },
       });
@@ -60,6 +105,11 @@ export class ProjectService {
           funcionarios: {
             some: { id: user.id },
           },
+        },
+        include: {
+          funcionarios: including.funcionarios,
+          clientes: including.clientes,
+          contributions: including.contributions,
         },
       });
     } else {
@@ -72,14 +122,24 @@ export class ProjectService {
     return this.validateProjectExists(id);
   }
 
-  async update(id: string, data: ProjectDto) {
-    const { nome, descricao, valorTotal, valorAcumulado, funcionarios, clientes, contribuicoes } =
-      data;
-
+  async update(id: string, data: ProjectUpdateDto) {
+    const {
+      nome,
+      descricao,
+      valorTotal,
+      valorAcumulado,
+      status,
+      dataInicio,
+      funcionarios,
+      clientes,
+      contributions,
+    } = data;
+    console.log(status);
+    await this.validateAcumulateTotal(valorAcumulado, valorTotal);
     await this.validateId(id);
     await this.validateProjectExists(id);
-    const funcionarioIds = funcionarios.map((f) => f);
-    const clienteIds = clientes.map((c) => c);
+    const funcionarioIds = funcionarios.map((f) => f.id);
+    const clienteIds = clientes.map((c) => c.id);
     if (funcionarios.length > 0 || clientes.length > 0)
       await this.validateUsersExist(funcionarioIds, clienteIds);
 
@@ -90,15 +150,17 @@ export class ProjectService {
         descricao,
         valorTotal,
         valorAcumulado,
+        status,
+        dataInicio,
         funcionarios: {
-          connect: funcionarios?.map((funcionario) => ({ id: funcionario })),
+          connect: funcionarios?.map((funcionario) => ({ id: funcionario.id })),
         },
         clientes: {
-          connect: clientes?.map((cliente) => ({ id: cliente })),
+          connect: clientes?.map((cliente) => ({ id: cliente.id })),
         },
         contributions: {
           deleteMany: {},
-          create: contribuicoes?.map((contribution) => ({
+          create: contributions?.map((contribution) => ({
             valor: contribution.valor,
             user: {
               connect: { id: contribution.userId },
@@ -116,6 +178,13 @@ export class ProjectService {
     return prisma.project.delete({
       where: { id },
     });
+  }
+
+  private async validateAcumulateTotal(valorAcumulado: string, valorTotal: string) {
+    const acumulado = Number(valorAcumulado.replace("R$", "").replace(/\./g, "").replace(",", ""));
+    const total = Number(valorTotal.replace("R$", "").replace(/\./g, "").replace(",", ""));
+    if (acumulado > total)
+      throw new CustomError("Valor acumulado não pode ser maior que valor total");
   }
 
   private async validateProjectExists(id: string): Promise<Project> {

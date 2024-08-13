@@ -85,11 +85,12 @@ model Project {
   valorTotal     String @db.VarChar(255)
   valorAcumulado String @db.VarChar(255)
   dataInicio     String @db.VarChar(255)
+  status         String @db.VarChar(16)
 
-  tarefas       Task[]          @relation
   funcionarios  User[]          @relation("ProjectEmployees")
   clientes      User[]          @relation("ProjectClients")
   contributions Contributions[] @relation("ProjectContributions")
+  Task          Task[]
 
   @@map("project")
 }

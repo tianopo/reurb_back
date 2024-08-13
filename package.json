@@ -18,7 +18,7 @@
     "checked": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:load": "artillery run tests/load/load-all.yml --output tests/reports/load.json",
+    "test:load": "artillery run prisma  tests/load/load-all.yml --output tests/reports/load.json",
     "build": "prisma generate && prisma migrate deploy && nest build",
     "vercel-build": "npm run build"
   },

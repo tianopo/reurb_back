@@ -17,6 +17,7 @@ CREATE TABLE "project" (
     "valorTotal" VARCHAR(255) NOT NULL,
     "valorAcumulado" VARCHAR(255) NOT NULL,
     "dataInicio" VARCHAR(255) NOT NULL,
+    "status" VARCHAR(16) NOT NULL,
 
     CONSTRAINT "project_pkey" PRIMARY KEY ("id")
 );

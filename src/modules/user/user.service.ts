@@ -138,6 +138,15 @@ export class UserService {
     });
   }
 
+  async getClientsAndEmployees() {
+    const employeeAndCliente = await prisma.user.findMany({
+      where: {
+        OR: [{ acesso: Role.Funcionario }, { acesso: Role.Cliente }],
+      },
+    });
+    return employeeAndCliente;
+  }
+
   async delete(id: string) {
     if (!id) throw new CustomError("Usuário ID é obrigatório");
     return prisma.user.delete({ where: { id } });

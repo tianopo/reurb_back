@@ -1,7 +1,7 @@
 import { IsArray, IsDateString, IsIn, IsNotEmpty, IsString } from "class-validator";
 import { ContributionDto } from "./contribution.dto";
 
-export class ProjectDto {
+export class ProjectUpdateDto {
   @IsString()
   @IsNotEmpty()
   nome: string;
@@ -28,11 +28,17 @@ export class ProjectDto {
   status?: string;
 
   @IsArray()
-  funcionarios?: string[];
+  funcionarios?: {
+    id: string;
+    nome: string;
+  }[];
 
   @IsArray()
-  clientes?: string[];
+  clientes?: {
+    id: string;
+    nome: string;
+  }[];
 
   @IsArray()
-  contribuicoes?: ContributionDto[];
+  contributions?: ContributionDto[];
 }

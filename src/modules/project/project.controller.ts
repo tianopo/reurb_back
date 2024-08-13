@@ -14,6 +14,7 @@ import { JwtAuthGuard } from "../../guard/auth.guard";
 import { RolesGuard } from "../../guard/roles.guard";
 import { ProjectDto } from "./dto/project.dto";
 import { ProjectService } from "./project.service";
+import { ProjectUpdateDto } from "./dto/projectUpdate.dto";
 
 @Controller("project")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -39,7 +40,7 @@ export class ProjectController {
 
   @Put(":id")
   @Roles(Role.Gestor, Role.Admin)
-  update(@Param("id") id: string, @Body() data: ProjectDto) {
+  update(@Param("id") id: string, @Body() data: ProjectUpdateDto) {
     return this.projectService.update(id, data);
   }
 
