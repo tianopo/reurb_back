@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from "@nestjs/common";
 import { Role, Roles } from "../../decorators/roles.decorator";
 import { JwtAuthGuard } from "../../guard/auth.guard";
 import { RolesGuard } from "../../guard/roles.guard";
@@ -21,14 +31,14 @@ export class UserController {
 
   @Post("employee")
   @Roles(Role.Gestor, Role.Admin)
-  async createEmployee(@Body() data: EmployeeDto) {
-    return this.userService.createEmployee(data);
+  async createEmployee(@Body() data: EmployeeDto, @Headers("authorization") authorization: string) {
+    return this.userService.createEmployee(data, authorization);
   }
 
   @Post("client")
   @Roles(Role.Gestor, Role.Admin)
-  async createClient(@Body() data: ClientDto) {
-    return this.userService.createClient(data);
+  async createClient(@Body() data: ClientDto, @Headers("authorization") authorization: string) {
+    return this.userService.createClient(data, authorization);
   }
 
   @Put(":id")
@@ -55,12 +65,13 @@ export class UserController {
   }
 
   @Get()
-  async list() {
-    return this.userService.list();
+  async list(@Headers("authorization") authorization: string) {
+    return this.userService.list(authorization);
   }
 
   @Get(":id")
   async getId(@Param("id") id: string) {
+    console.log(id, "1");
     return await this.userService.getId(id);
   }
 
@@ -76,8 +87,8 @@ export class UserController {
 
   @Delete(":id")
   @Roles(Role.Gestor, Role.Admin)
-  async delete(@Param("id") id: string) {
-    return this.userService.delete(id);
+  async delete(@Param("id") id: string, @Headers("authorization") authorization: string) {
+    return this.userService.delete(id, authorization);
   }
 
   @Get(":token")

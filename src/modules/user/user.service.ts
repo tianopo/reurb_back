@@ -4,6 +4,8 @@ import * as bcrypt from "bcrypt";
 import { prisma } from "../../config/prisma-connection";
 import { Role } from "../../decorators/roles.decorator";
 import { CustomError } from "../../err/custom/Error.filter";
+import { UnauthorizedException } from "../../err/Unathorized.filter";
+import { TokenService } from "../token/token.service";
 import { ClientDto } from "./dto/client.dto";
 import { EmployeeDto } from "./dto/employee.dto";
 import { RecoverPasswordDto } from "./dto/recover-password.dto";
@@ -11,6 +13,8 @@ import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UserService {
+  constructor(private readonly tokenService: TokenService) {}
+
   async createUser(data: UserDto) {
     await this.validateUniqueFields(data);
 
@@ -18,27 +22,33 @@ export class UserService {
       data: {
         ...data,
         status: true,
+        createdById: "",
       },
     });
   }
 
-  async createEmployee(data: EmployeeDto) {
+  async createEmployee(data: EmployeeDto, authorization: string) {
     await this.validateUniqueFields(data);
     const senha = await bcrypt.hash("Abcd123!", 10);
+    const { id } = await this.userData(authorization);
+
     return prisma.user.create({
       data: {
         ...data,
         status: true,
-        acesso: Role.Funcionario,
+        acesso: data.acesso === Role.Funcionario ? Role.Funcionario : Role.Admin,
         senha,
         token: "",
+        createdById: id,
       },
     });
   }
 
-  async createClient(data: ClientDto) {
+  async createClient(data: ClientDto, authorization: string) {
     await this.validateUniqueFields(data);
     const senha = await bcrypt.hash("Abcd123!", 10);
+    const { id } = await this.userData(authorization);
+
     return prisma.user.create({
       data: {
         ...data,
@@ -46,6 +56,7 @@ export class UserService {
         acesso: Role.Cliente,
         senha,
         token: "",
+        createdById: id,
       },
     });
   }
@@ -109,21 +120,68 @@ export class UserService {
     });
   }
 
-  async list() {
-    // const cacheKey = "users";
-    // const cache = await redis.get(cacheKey);
-    const data = await prisma.user.findMany();
-    // cacheStale(cacheKey, data, "dynamic");
-    // if (cache) return JSON.parse(cache);
-    // await redis.set(cacheKey, JSON.stringify(data));
+  async list(authorization: string) {
+    const { id, acesso, createdById } = await this.userData(authorization);
+    console.log(createdById);
+    const including = {
+      projetosEmp: {
+        select: {
+          id: true,
+          nome: true,
+        },
+      },
+      projetosCli: {
+        select: {
+          id: true,
+          nome: true,
+        },
+      },
+    };
 
-    return data;
+    if (acesso === Role.Gestor)
+      return await prisma.user.findMany({
+        include: including,
+      });
+    else if (acesso === Role.Admin)
+      return prisma.user.findMany({
+        where: {
+          OR: [{ id }, { createdById: id }],
+        },
+        include: including,
+      });
+    else if (acesso === Role.Funcionario)
+      return prisma.user.findMany({
+        where: {
+          OR: [{ id }, { createdById }],
+        },
+        include: including,
+      });
+    else if (acesso === Role.Cliente)
+      return prisma.user.findMany({
+        where: { id },
+      });
+    else throw new UnauthorizedException("Permissão não reconhecida");
   }
 
   async getId(id: string) {
     if (!id) throw new CustomError("ID de usuário é obrigatório.");
+    console.log(id);
     const user = await prisma.user.findUnique({
       where: { id },
+      include: {
+        projetosEmp: {
+          select: {
+            id: true,
+            nome: true,
+          },
+        },
+        projetosCli: {
+          select: {
+            id: true,
+            nome: true,
+          },
+        },
+      },
     });
     if (!user) throw new CustomError("Usuário não encontrado.");
 
@@ -147,9 +205,23 @@ export class UserService {
     return employeeAndCliente;
   }
 
-  async delete(id: string) {
-    if (!id) throw new CustomError("Usuário ID é obrigatório");
-    return prisma.user.delete({ where: { id } });
+  async delete(userId: string, authorization: string) {
+    if (!userId) throw new CustomError("Usuário ID é obrigatório");
+
+    const { id, acesso } = await this.userData(authorization);
+
+    if (acesso === Role.Gestor) throw new CustomError("O gestor não deve se excluir");
+    if (userId === id) throw new CustomError("A própria pessoa não deve se excluir");
+
+    return prisma.user.delete({ where: { id: userId } });
+  }
+
+  async userData(authorization: string) {
+    const token = authorization.replace("Bearer ", "");
+    const user = await this.tokenService.validateToken(token);
+    const { id, acesso, email, createdById } = user;
+
+    return { id, acesso, email, createdById };
   }
 
   async updateToken(user: User) {

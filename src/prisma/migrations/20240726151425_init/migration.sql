@@ -32,6 +32,7 @@ CREATE TABLE "user" (
     "telefoneConjuge" VARCHAR(15),
     "emailConjuge" TEXT,
     "status" BOOLEAN NOT NULL,
+    "createdById" VARCHAR(255),
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );

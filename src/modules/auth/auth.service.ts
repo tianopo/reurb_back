@@ -32,6 +32,7 @@ export class AuthService {
       email,
       id: user.id,
       acesso: user.acesso,
+      createdById: user.createdById,
     });
 
     await this.userService.updateToken({
@@ -67,6 +68,7 @@ export class AuthService {
       email,
       id: user.id,
       acesso: user.acesso,
+      createdById: user.createdById,
     });
 
     return {

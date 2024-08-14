@@ -155,4 +155,6 @@ export class ClientDto extends Required {
   @MaxLength(255)
   emailConjuge?: string;
   status?: boolean | string;
+
+  createdById: string;
 }

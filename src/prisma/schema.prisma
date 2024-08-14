@@ -45,6 +45,8 @@ model User {
   emailConjuge       String?         @unique
   // status
   status             Boolean
+  // administrador criador
+  createdById        String          @db.VarChar(255)
   // relacionamentos
   tarefas            Task[]          @relation("TaskUsers")
   projetosEmp        Project[]       @relation("ProjectEmployees")

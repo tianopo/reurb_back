@@ -37,4 +37,6 @@ export class UserDto extends Required {
   @IsString()
   @MaxLength(20)
   acesso: Role;
+
+  createdById?: string;
 }
