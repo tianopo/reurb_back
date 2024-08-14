@@ -31,7 +31,7 @@ export class TaskService {
     const token = authorization.replace("Bearer ", "");
     const user = await this.tokenService.validateToken(token);
 
-    const includefuncionarios = {
+    const including = {
       funcionarios: {
         select: {
           id: true,
@@ -39,10 +39,16 @@ export class TaskService {
           email: true,
         },
       },
+      projeto: {
+        select: {
+          id: true,
+          nome: true,
+        },
+      },
     };
 
     if ([Role.Gestor, Role.Admin].includes(user.acesso))
-      return prisma.task.findMany({ include: includefuncionarios });
+      return prisma.task.findMany({ include: including });
     else
       return prisma.task.findMany({
         where: {
@@ -50,7 +56,7 @@ export class TaskService {
             some: { id: user.id },
           },
         },
-        include: includefuncionarios,
+        include: including,
       });
   }
 
@@ -59,22 +65,32 @@ export class TaskService {
     return this.validateTaskExists(id);
   }
 
-  async update(id: string, data: TaskUpdateDto) {
+  async update(id: string, task: TaskUpdateDto) {
+    const { descricao, data, prioridade, projeto, status, funcionarios } = task;
     await this.validateId(id);
     await this.validateTaskExists(id);
-    const ids = data.funcionarios.map((f) => f.id);
-    if (data.funcionarios && data.funcionarios.length > 0) await this.validateUsersExist(ids);
+
+    if (funcionarios && funcionarios.length > 0) {
+      const ids = funcionarios.map((f) => f.id);
+      await this.validateUsersExist(ids);
+    }
+
+    const utcDate = new Date(data);
+    utcDate.setHours(utcDate.getHours() - 3);
 
     return prisma.task.update({
       where: { id },
       data: {
-        descricao: data.descricao,
-        data: new Date(data.data),
-        prioridade: data.prioridade,
-        projeto: data.projetoId ? { connect: { id: data.projetoId } } : undefined,
-        status: data.status,
+        descricao: descricao,
+        data: utcDate,
+        prioridade: prioridade,
+        projeto: projeto ? { connect: { id: projeto.id } } : { disconnect: true },
+        status: status,
         funcionarios: {
-          connect: data.funcionarios?.map((funcionario) => ({ id: funcionario.id })) || [],
+          set:
+            funcionarios?.length > 0
+              ? funcionarios.map((funcionario) => ({ id: funcionario.id }))
+              : [],
         },
       },
     });

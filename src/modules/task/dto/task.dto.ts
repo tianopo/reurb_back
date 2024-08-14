@@ -8,7 +8,6 @@ import {
   Length,
 } from "class-validator";
 import { DateHourFormat } from "../../../decorators/validators/regex.decorator";
-import { ProjectDto } from "../../project/dto/project.dto";
 import { Required } from "../../required.dto";
 
 export class TaskDto extends Required {
@@ -29,9 +28,6 @@ export class TaskDto extends Required {
   @IsOptional()
   @IsString()
   projetoId?: string;
-
-  @IsString()
-  projeto?: ProjectDto;
 
   @IsString()
   @IsIn(["à Fazer", "Atrasados", "Feitos"])

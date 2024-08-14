@@ -2,12 +2,11 @@
   Warnings:
 
   - You are about to drop the column `projeto` on the `task` table. All the data in the column will be lost.
-  - Added the required column `projectId` to the `task` table without a default value. This is not possible if the table is not empty.
 
 */
 -- AlterTable
 ALTER TABLE "task" DROP COLUMN "projeto",
-ADD COLUMN     "projectId" TEXT NOT NULL;
+ADD COLUMN     "projectId" TEXT;
 
 -- CreateTable
 CREATE TABLE "project" (
@@ -63,10 +62,10 @@ CREATE UNIQUE INDEX "_ProjectClients_AB_unique" ON "_ProjectClients"("A", "B");
 CREATE INDEX "_ProjectClients_B_index" ON "_ProjectClients"("B");
 
 -- AddForeignKey
-ALTER TABLE "task" ADD CONSTRAINT "task_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "task" ADD CONSTRAINT "task_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "contribution" ADD CONSTRAINT "contribution_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "contribution" ADD CONSTRAINT "contribution_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contribution" ADD CONSTRAINT "contribution_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "project"("id") ON DELETE CASCADE ON UPDATE CASCADE;

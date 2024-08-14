@@ -70,10 +70,10 @@ model Task {
   prioridade String   @db.VarChar(20)
   status     String   @db.VarChar(20)
 
-  funcionarios User[]  @relation("TaskUsers")
-  projeto      Project @relation(fields: [projectId], references: [id])
+  funcionarios User[]   @relation("TaskUsers")
+  projeto      Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  projectId String
+  projectId String?
 
   @@map("task")
 }
@@ -99,7 +99,7 @@ model Contributions {
   id    String @id @unique @default(uuid())
   valor String @db.VarChar(255)
 
-  user    User    @relation("UserContributions", fields: [userId], references: [id])
+  user    User    @relation("UserContributions", fields: [userId], references: [id], onDelete: Cascade)
   project Project @relation("ProjectContributions", fields: [projectId], references: [id], onDelete: Cascade)
 
   userId    String

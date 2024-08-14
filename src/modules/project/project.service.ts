@@ -134,14 +134,15 @@ export class ProjectService {
       clientes,
       contributions,
     } = data;
-    console.log(status);
     await this.validateAcumulateTotal(valorAcumulado, valorTotal);
     await this.validateId(id);
     await this.validateProjectExists(id);
-    const funcionarioIds = funcionarios.map((f) => f.id);
-    const clienteIds = clientes.map((c) => c.id);
-    if (funcionarios.length > 0 || clientes.length > 0)
+
+    if (funcionarios.length > 0 || clientes.length > 0) {
+      const funcionarioIds = funcionarios.map((f) => f.id);
+      const clienteIds = clientes.map((c) => c.id);
       await this.validateUsersExist(funcionarioIds, clienteIds);
+    }
 
     const update = await prisma.project.update({
       where: { id },
@@ -153,10 +154,13 @@ export class ProjectService {
         status,
         dataInicio,
         funcionarios: {
-          connect: funcionarios?.map((funcionario) => ({ id: funcionario.id })),
+          set:
+            funcionarios?.length > 0
+              ? funcionarios.map((funcionario) => ({ id: funcionario.id }))
+              : [],
         },
         clientes: {
-          connect: clientes?.map((cliente) => ({ id: cliente.id })),
+          set: clientes?.length > 0 ? clientes.map((cliente) => ({ id: cliente.id })) : [],
         },
         contributions: {
           deleteMany: {},
