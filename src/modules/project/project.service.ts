@@ -418,7 +418,7 @@ export class ProjectService {
 
         const currentContributionMap = new Map(currentContributions.map((c) => [c.userId, c]));
 
-        const updates = contributions.map((contribution) => {
+        const updates = contributions.map(async (contribution) => {
           const key = contribution.userId;
           const current = currentContributionMap.get(key);
 
@@ -431,8 +431,8 @@ export class ProjectService {
 
           if (needsUpdate) {
             if (current) {
-              console.log("oi");
-              const contributionsUpdate = prisma.contributions.update({
+              // Atualizar contribuição existente
+              await prisma.contributions.update({
                 where: { id: current.id },
                 data: {
                   valor: contribution.valor,
@@ -443,15 +443,194 @@ export class ProjectService {
                 },
               });
 
-              if (current.valor > contribution.valor) {
-              } else if (current.valor < contribution.valor) {
+              // Inicializa a variável tasksToCreate
+              const tasksToCreate: any[] = [];
+
+              // Atualizar registros financeiros associados
+              if (current.valor !== contribution.valor) {
+                if (current.entrada !== contribution.entrada) {
+                  await prisma.financial.updateMany({
+                    where: {
+                      contributionId: current.id,
+                      nome: { startsWith: "Entrada" },
+                    },
+                    data: {
+                      valor: contribution.entrada.toString(),
+                    },
+                  });
+                }
+
+                if (current.valorParcela !== contribution.valorParcela) {
+                  await prisma.financial.updateMany({
+                    where: {
+                      contributionId: current.id,
+                      nome: { startsWith: "Pagamento" },
+                    },
+                    data: {
+                      valor: contribution.valorParcela.toString(),
+                    },
+                  });
+                }
+              }
+
+              // Ajustar parcelas e tarefas
+              const numParcelas = parseInt(contribution.parcelas, 10);
+              const currentParcelas = await prisma.financial.findMany({
+                where: { contributionId: current.id, nome: { startsWith: "Pagamento" } },
+                orderBy: { vencimento: "asc" },
+              });
+
+              const currentParcelasCount = currentParcelas.length;
+
+              if (numParcelas > currentParcelasCount) {
+                // Adicionar novas parcelas e tarefas
+                const financials: any[] = [];
+
+                for (let i = currentParcelasCount; i < numParcelas; i++) {
+                  const vencimentoDate = new Date();
+                  let vencimento = "";
+                  const diaDoMes = vencimentoDate.getDay() + 1;
+
+                  if (diaDoMes <= 10) {
+                    vencimentoDate.setDate(20);
+                    vencimento = "20";
+                  } else if (diaDoMes <= 20) {
+                    vencimentoDate.setDate(30);
+                    vencimento = "30";
+                  } else {
+                    vencimentoDate.setDate(10);
+                    vencimento = "10";
+                  }
+                  vencimentoDate.setMonth(vencimentoDate.getMonth() + i + 1 - 3);
+
+                  financials.push({
+                    nome: `Pagamento ${i + 1} - ${nome}`,
+                    tipo: "Entrada",
+                    valor: contribution.valorParcela.toString(),
+                    status: "Lançamentos",
+                    pagamento: "Outros",
+                    vencimento,
+                    contributionId: current.id,
+                    clienteId: clientes?.[0]?.id || null,
+                  });
+
+                  tasksToCreate.push({
+                    descricao: `${nome} - Parcela ${i + 1}`,
+                    data: vencimentoDate,
+                    prioridade: "Baixa",
+                    status: "à Fazer",
+                    projectId: updateProject.id,
+                    contributionId: current.id,
+                  });
+
+                  // Adiciona a primeira parcela (entrada)
+                  if (i === 0) {
+                    financials.push({
+                      nome: `Entrada - ${nome}`,
+                      tipo: "Entrada",
+                      valor: contribution.entrada.toString(),
+                      status: "Lançamentos",
+                      pagamento: "Outros",
+                      vencimento,
+                      contributionId: current.id,
+                      clienteId: clientes?.[0]?.id || null,
+                    });
+
+                    tasksToCreate.push({
+                      descricao: `${nome} - Entrada`,
+                      data: vencimentoDate,
+                      prioridade: "Baixa",
+                      status: "à Fazer",
+                      projectId: updateProject.id,
+                      contributionId: current.id,
+                    });
+                  }
+                }
+
+                await prisma.financial.createMany({
+                  data: financials,
+                });
+
+                if (tasksToCreate.length) {
+                  await prisma.task.createMany({
+                    data: tasksToCreate,
+                  });
+                }
+              } else if (numParcelas < currentParcelasCount) {
+                // Remover parcelas e atualizar as existentes
+                const parcelsToDelete = currentParcelas.slice(numParcelas);
+                await prisma.financial.deleteMany({
+                  where: {
+                    id: { in: parcelsToDelete.map((p) => p.id) },
+                  },
+                });
+
+                // Atualizar as parcelas restantes
+                const updatedParcelas = currentParcelas.slice(0, numParcelas);
+                await Promise.all(
+                  updatedParcelas.map(async (parcela, index) => {
+                    const vencimentoDate = new Date();
+                    let vencimento = "";
+                    const diaDoMes = vencimentoDate.getDay() + 1;
+
+                    if (diaDoMes <= 10) {
+                      vencimentoDate.setDate(20);
+                      vencimento = "20";
+                    } else if (diaDoMes <= 20) {
+                      vencimentoDate.setDate(30);
+                      vencimento = "30";
+                    } else {
+                      vencimentoDate.setDate(10);
+                      vencimento = "10";
+                    }
+                    vencimentoDate.setMonth(vencimentoDate.getMonth() + index + 1 - 3);
+
+                    await prisma.financial.update({
+                      where: { id: parcela.id },
+                      data: {
+                        vencimento,
+                      },
+                    });
+                  }),
+                );
+
+                // Atualizar ou criar tarefas associadas
+                const existingTaskIds = updatedParcelas.map((p) => p.id);
+                const tasksToDelete = await prisma.task.findMany({
+                  where: {
+                    contributionId: current.id,
+                    id: { notIn: existingTaskIds },
+                  },
+                });
+                await prisma.task.deleteMany({
+                  where: {
+                    id: { in: tasksToDelete.map((task) => task.id) },
+                  },
+                });
+
+                const tasksToUpdate: any[] = [];
+                updatedParcelas.forEach((parcela, index) => {
+                  const task = tasksToCreate.find((t) => t.contributionId === parcela.id);
+                  if (task) {
+                    tasksToUpdate.push({
+                      where: { id: task.id },
+                      data: {
+                        data: parcela.vencimento,
+                      },
+                    });
+                  }
+                });
+
+                await Promise.all(
+                  tasksToUpdate.map((taskUpdate) => prisma.task.update(taskUpdate)),
+                );
               }
             }
           }
 
           return null;
         });
-        await Promise.all(updates.filter((u) => u !== null));
+        await Promise.all(updates);
       }
 
       return updateProject;
@@ -499,6 +678,8 @@ export class ProjectService {
 
     const acumulado = Number(valorAcumulado.replace("R$", "").replace(/\./g, "").replace(",", ""));
     const total = Number(valorTotal.replace("R$", "").replace(/\./g, "").replace(",", ""));
+    if (totalContribuicoes !== acumulado)
+      throw new CustomError("Valor acumulado tem que ser igual as contribuições");
     if (acumulado > total)
       throw new CustomError("Valor acumulado não pode ser maior que valor total");
 
