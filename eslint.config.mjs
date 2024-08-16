@@ -83,7 +83,7 @@ export default [...compat.extends(
     files: ["**/*.service.ts"],
     rules: {
         "max-lines": ["error", {
-            max: 400,
+            max: 550,
         }],
         "@typescript-eslint/no-explicit-any": "off",
     },

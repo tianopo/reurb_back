@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsIn, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsDateString, IsIn, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ContributionDto } from "./contribution.dto";
 
 export class ProjectDto {
@@ -27,12 +27,15 @@ export class ProjectDto {
   @IsIn(["Aberto", "Progresso", "Concluido"])
   status?: string;
 
+  @IsOptional()
   @IsArray()
   funcionarios?: string[];
 
+  @IsOptional()
   @IsArray()
   clientes?: string[];
 
+  @IsOptional()
   @IsArray()
   contribuicoes?: ContributionDto[];
 }

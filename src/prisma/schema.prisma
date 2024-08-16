@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// dê um prisma migrate com o nome da nova tabela
 model User {
   id                 String          @id @unique @default(uuid())
   createdIn          DateTime        @default(now())
@@ -52,6 +53,7 @@ model User {
   projetosEmp        Project[]       @relation("ProjectEmployees")
   projetosCli        Project[]       @relation("ProjectClients")
   contributions      Contributions[] @relation("UserContributions")
+  Financial          Financial[]     @relation("FinancialClients")
 
   @@index([email])
   @@index([cpf])
@@ -72,16 +74,21 @@ model Task {
   prioridade String   @db.VarChar(20)
   status     String   @db.VarChar(20)
 
-  funcionarios User[]   @relation("TaskUsers")
-  projeto      Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  funcionarios User[]         @relation("TaskUsers")
+  contribution Contributions? @relation("ContributionTasks", fields: [contributionId], references: [id], onDelete: Cascade)
+  projeto      Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  projectId String?
+  projectId      String?
+  contributionId String?
 
   @@map("task")
 }
 
 model Project {
-  id             String @id @unique @default(uuid())
+  id        String   @id @unique @default(uuid())
+  createdIn DateTime @default(now())
+  updated   DateTime @default(now()) @updatedAt
+
   nome           String @db.VarChar(100)
   descricao      String @db.VarChar(255)
   valorTotal     String @db.VarChar(255)
@@ -98,14 +105,44 @@ model Project {
 }
 
 model Contributions {
-  id    String @id @unique @default(uuid())
-  valor String @db.VarChar(255)
+  id        String   @id @unique @default(uuid())
+  createdIn DateTime @default(now())
+  updated   DateTime @default(now()) @updatedAt
 
-  user    User    @relation("UserContributions", fields: [userId], references: [id], onDelete: Cascade)
-  project Project @relation("ProjectContributions", fields: [projectId], references: [id], onDelete: Cascade)
+  valor        String @db.VarChar(100)
+  entrada      String @db.VarChar(100)
+  parcelas     String @db.VarChar(2)
+  valorParcela String @db.VarChar(100)
 
-  userId    String
-  projectId String
+  financials Financial[] @relation("ContributionFinancials")
+  tasks      Task[]      @relation("ContributionTasks")
+  user       User?       @relation("UserContributions", fields: [userId], references: [id], onDelete: Cascade)
+  project    Project?    @relation("ProjectContributions", fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  projectId String?
 
   @@map("contribution")
+}
+
+model Financial {
+  id        String   @id @unique @default(uuid())
+  createdIn DateTime @default(now())
+  updated   DateTime @default(now()) @updatedAt
+
+  nome       String @db.VarChar(100)
+  tipo       String @db.VarChar(7)
+  valor      String @db.VarChar(100)
+  status     String @db.VarChar(20)
+  pagamento  String @db.VarChar(100)
+  vencimento String @db.VarChar(2)
+
+  // Relacionamentos
+  contribution Contributions? @relation("ContributionFinancials", fields: [contributionId], references: [id], onDelete: Cascade)
+  cliente      User?          @relation("FinancialClients", fields: [clienteId], references: [id], onDelete: Cascade)
+
+  contributionId String?
+  clienteId      String? @db.VarChar(255)
+
+  @@map("financial")
 }

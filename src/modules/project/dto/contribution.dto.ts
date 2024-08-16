@@ -1,11 +1,28 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 
 export class ContributionDto {
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  valor: string;
 
   @IsNotEmpty()
   @IsString()
-  valor: string;
+  entrada: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(1, 2)
+  parcelas: string;
+
+  @IsNotEmpty()
+  @IsString()
+  valorParcela: string;
+
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
+  @IsOptional()
+  @IsString()
+  projectId?: string;
 }

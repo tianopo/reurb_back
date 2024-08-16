@@ -33,6 +33,7 @@ export class TaskDto extends Required {
   @IsIn(["à Fazer", "Atrasados", "Feitos"])
   status: string;
 
+  @IsOptional()
   @IsArray()
   funcionarios?: string[];
 }
