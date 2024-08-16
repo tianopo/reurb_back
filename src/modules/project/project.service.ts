@@ -73,7 +73,7 @@ export class ProjectService {
         for (let i = 0; i < numParcelas; i++) {
           const vencimentoDate = new Date();
           let vencimento = "";
-          const diaDoMes = vencimentoDate.getDay() + 1;
+          const diaDoMes = vencimentoDate.getDate() + 1;
           console.log(vencimentoDate, diaDoMes, dataInicio);
 
           if (diaDoMes <= 10) {
@@ -334,7 +334,7 @@ export class ProjectService {
             for (let i = 0; i < numParcelas; i++) {
               const vencimentoDate = new Date();
               let vencimento = "";
-              const diaDoMes = vencimentoDate.getDay() + 1;
+              const diaDoMes = vencimentoDate.getDate() + 1;
 
               if (diaDoMes <= 10) {
                 vencimentoDate.setDate(20);
@@ -347,7 +347,7 @@ export class ProjectService {
                 vencimento = "10";
               }
               vencimentoDate.setMonth(
-                vencimentoDate.getMonth() + i + 1 - 3 + currentContributions.length,
+                vencimentoDate.getMonth() + i + 1 + currentContributions.length,
               );
               financials.push({
                 nome: `Pagamento ${i + 1} - ${nome}`,
@@ -489,7 +489,7 @@ export class ProjectService {
                 for (let i = currentParcelasCount; i < numParcelas; i++) {
                   const vencimentoDate = new Date();
                   let vencimento = "";
-                  const diaDoMes = vencimentoDate.getDay() + 1;
+                  const diaDoMes = vencimentoDate.getDate() + 1;
 
                   if (diaDoMes <= 10) {
                     vencimentoDate.setDate(20);
@@ -501,7 +501,9 @@ export class ProjectService {
                     vencimentoDate.setDate(10);
                     vencimento = "10";
                   }
-                  vencimentoDate.setMonth(vencimentoDate.getMonth() + i + 1 - 3);
+                  vencimentoDate.setMonth(
+                    vencimentoDate.getMonth() + i + 1 + currentContributions.length,
+                  );
 
                   financials.push({
                     nome: `Pagamento ${i + 1} - ${nome}`,
@@ -557,21 +559,45 @@ export class ProjectService {
                   });
                 }
               } else if (numParcelas < currentParcelasCount) {
-                // Remover parcelas e atualizar as existentes
+                // Remover parcelas e tarefas associadas
                 const parcelsToDelete = currentParcelas.slice(numParcelas);
+                const tasksToDelete = await prisma.task.findMany({
+                  where: {
+                    contributionId: current.id,
+                    descricao: {
+                      startsWith: `${nome} - Parcela `,
+                    },
+                  },
+                });
+
+                const tasksToDeleteIds = tasksToDelete
+                  .filter((task) => {
+                    const taskParcelaNumber = parseInt(task.descricao.split(" - Parcela ")[1], 10);
+                    return taskParcelaNumber > numParcelas;
+                  })
+                  .map((task) => task.id);
+                console.log(tasksToDeleteIds);
+                if (tasksToDeleteIds.length > 0) {
+                  await prisma.task.deleteMany({
+                    where: {
+                      id: { in: tasksToDeleteIds },
+                    },
+                  });
+                }
+
                 await prisma.financial.deleteMany({
                   where: {
                     id: { in: parcelsToDelete.map((p) => p.id) },
                   },
                 });
 
-                // Atualizar as parcelas restantes
+                // Atualizar parcelas restantes
                 const updatedParcelas = currentParcelas.slice(0, numParcelas);
                 await Promise.all(
                   updatedParcelas.map(async (parcela, index) => {
                     const vencimentoDate = new Date();
                     let vencimento = "";
-                    const diaDoMes = vencimentoDate.getDay() + 1;
+                    const diaDoMes = vencimentoDate.getDate();
 
                     if (diaDoMes <= 10) {
                       vencimentoDate.setDate(20);
@@ -583,7 +609,9 @@ export class ProjectService {
                       vencimentoDate.setDate(10);
                       vencimento = "10";
                     }
-                    vencimentoDate.setMonth(vencimentoDate.getMonth() + index + 1 - 3);
+                    vencimentoDate.setMonth(
+                      vencimentoDate.getMonth() + index + 1 + currentContributions.length,
+                    );
 
                     await prisma.financial.update({
                       where: { id: parcela.id },
@@ -594,28 +622,17 @@ export class ProjectService {
                   }),
                 );
 
-                // Atualizar ou criar tarefas associadas
-                const existingTaskIds = updatedParcelas.map((p) => p.id);
-                const tasksToDelete = await prisma.task.findMany({
-                  where: {
-                    contributionId: current.id,
-                    id: { notIn: existingTaskIds },
-                  },
-                });
-                await prisma.task.deleteMany({
-                  where: {
-                    id: { in: tasksToDelete.map((task) => task.id) },
-                  },
-                });
-
+                // Atualizar tarefas associadas
                 const tasksToUpdate: any[] = [];
                 updatedParcelas.forEach((parcela, index) => {
-                  const task = tasksToCreate.find((t) => t.contributionId === parcela.id);
+                  const task = tasksToCreate.find((t) =>
+                    t.descricao.endsWith(`Parcela ${index + 1}`),
+                  );
                   if (task) {
                     tasksToUpdate.push({
                       where: { id: task.id },
                       data: {
-                        data: parcela.vencimento,
+                        data: new Date(parcela.vencimento),
                       },
                     });
                   }
@@ -630,6 +647,7 @@ export class ProjectService {
 
           return null;
         });
+
         await Promise.all(updates);
       }
 
