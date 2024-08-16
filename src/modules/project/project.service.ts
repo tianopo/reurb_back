@@ -28,7 +28,6 @@ export class ProjectService {
     await this.validateUsersExist(funcionarios, clientes);
 
     const projectTransaction = await prisma.$transaction(async (prisma) => {
-      // Criação do projeto
       const createProject = await prisma.project.create({
         data: {
           nome,
@@ -51,6 +50,25 @@ export class ProjectService {
         const financials = [];
         const numParcelas = parseInt(contribution.parcelas, 10);
         const valorParcela = parseFloat(contribution.valorParcela);
+
+        const createContribution = await prisma.contributions.create({
+          data: {
+            valor: contribution.valor,
+            entrada: contribution.entrada,
+            parcelas: contribution.parcelas,
+            valorParcela: contribution.valorParcela,
+            project: {
+              connect: { id: createProject.id },
+            },
+            ...(contribution.userId
+              ? {
+                  user: {
+                    connect: { id: contribution.userId },
+                  },
+                }
+              : {}),
+          },
+        });
 
         for (let i = 0; i < numParcelas; i++) {
           const vencimentoDate = new Date();
@@ -83,6 +101,7 @@ export class ProjectService {
             prioridade: "Baixa",
             status: "à Fazer",
             projectId: createProject.id,
+            contributionId: createContribution.id,
           });
 
           if (i === 0) {
@@ -100,28 +119,11 @@ export class ProjectService {
               prioridade: "Baixa",
               status: "à Fazer",
               projectId: createProject.id,
+              contributionId: createContribution.id,
             });
           }
         }
 
-        const createContribution = await prisma.contributions.create({
-          data: {
-            valor: contribution.valor,
-            entrada: contribution.entrada,
-            parcelas: contribution.parcelas,
-            valorParcela: contribution.valorParcela,
-            project: {
-              connect: { id: createProject.id },
-            },
-            ...(contribution.userId
-              ? {
-                  user: {
-                    connect: { id: contribution.userId },
-                  },
-                }
-              : {}),
-          },
-        });
         await prisma.financial.createMany({
           data: financials.map((f) => ({
             nome: f.nome,
@@ -136,8 +138,8 @@ export class ProjectService {
         });
         return createContribution;
       });
+      await Promise.all(contributionPromises);
 
-      // Criação das tarefas em lote, caso existam
       if (tasksToCreate.length) {
         await prisma.task.createMany({
           data: tasksToCreate.map((task) => ({
@@ -146,11 +148,10 @@ export class ProjectService {
             prioridade: task.prioridade,
             status: task.status,
             projectId: task.projectId,
+            contributionId: task.contributionId,
           })),
         });
       }
-
-      await Promise.all(contributionPromises);
 
       return createProject;
     });
@@ -289,6 +290,132 @@ export class ProjectService {
           },
         });
 
+        if (contributions.length < currentContributions.length) {
+          const contributionUserIds = contributions.map((contribution) => contribution.userId);
+          const contributionsToDelete = currentContributions.filter(
+            (current) => !contributionUserIds.includes(current.userId),
+          );
+          if (contributionsToDelete.length > 0) {
+            await prisma.contributions.deleteMany({
+              where: {
+                id: { in: contributionsToDelete.map((c) => c.id) },
+              },
+            });
+          }
+        } else if (contributions.length > currentContributions.length) {
+          const tasksToCreate: any[] = [];
+          const newContributions = contributions.filter((contribution) => {
+            return !currentContributions.some((current) => current.userId === contribution.userId);
+          });
+          const contributionPromises = newContributions?.map(async (contribution) => {
+            const financials = [];
+            const numParcelas = parseInt(contribution.parcelas, 10);
+            const valorParcela = parseFloat(contribution.valorParcela);
+
+            const createContribution = await prisma.contributions.create({
+              data: {
+                valor: contribution.valor,
+                entrada: contribution.entrada,
+                parcelas: contribution.parcelas,
+                valorParcela: contribution.valorParcela,
+                project: {
+                  connect: { id: updateProject.id },
+                },
+                ...(contribution.userId
+                  ? {
+                      user: {
+                        connect: { id: contribution.userId },
+                      },
+                    }
+                  : {}),
+              },
+            });
+
+            for (let i = 0; i < numParcelas; i++) {
+              const vencimentoDate = new Date();
+              let vencimento = "";
+              const diaDoMes = vencimentoDate.getDay() + 1;
+
+              if (diaDoMes <= 10) {
+                vencimentoDate.setDate(20);
+                vencimento = "20";
+              } else if (diaDoMes <= 20) {
+                vencimentoDate.setDate(30);
+                vencimento = "30";
+              } else {
+                vencimentoDate.setDate(10);
+                vencimento = "10";
+              }
+              vencimentoDate.setMonth(
+                vencimentoDate.getMonth() + i + 1 - 3 + currentContributions.length,
+              );
+              financials.push({
+                nome: `Pagamento ${i + 1} - ${nome}`,
+                tipo: "Entrada",
+                valor: valorParcela.toString(),
+                status: "Lançamentos",
+                pagamento: "Outros",
+                vencimento,
+              });
+              tasksToCreate.push({
+                descricao: `${nome} - Parcela ${i + 1}`,
+                data: vencimentoDate,
+                prioridade: "Baixa",
+                status: "à Fazer",
+                projectId: updateProject.id,
+                contributionId: createContribution.id,
+              });
+
+              if (i === 0) {
+                financials.push({
+                  nome: `Entrada - ${nome}`,
+                  tipo: "Entrada",
+                  valor: valorParcela.toString(),
+                  status: "Lançamentos",
+                  pagamento: "Outros",
+                  vencimento,
+                });
+                tasksToCreate.push({
+                  descricao: `${nome} - Entrada`,
+                  data: vencimentoDate,
+                  prioridade: "Baixa",
+                  status: "à Fazer",
+                  projectId: updateProject.id,
+                  contributionId: createContribution.id,
+                });
+              }
+            }
+
+            await prisma.financial.createMany({
+              data: financials.map((f) => ({
+                nome: f.nome,
+                tipo: f.tipo,
+                valor: f.valor,
+                status: f.status,
+                pagamento: f.pagamento,
+                vencimento: f.vencimento,
+                contributionId: createContribution.id,
+                clienteId: clientes?.[0]?.id || null,
+              })),
+            });
+            return createContribution;
+          });
+          await Promise.all(contributionPromises);
+
+          if (tasksToCreate.length) {
+            await prisma.task.createMany({
+              data: tasksToCreate.map((task) => ({
+                descricao: task.descricao,
+                data: task.data,
+                prioridade: task.prioridade,
+                status: task.status,
+                projectId: task.projectId,
+                contributionId: task.contributionId,
+              })),
+            });
+          }
+        }
+
         const currentContributionMap = new Map(currentContributions.map((c) => [c.userId, c]));
 
         const updates = contributions.map((contribution) => {
@@ -303,9 +430,9 @@ export class ProjectService {
             current.valorParcela !== contribution.valorParcela;
 
           if (needsUpdate) {
-            console.log("oi");
             if (current) {
-              return prisma.contributions.update({
+              console.log("oi");
+              const contributionsUpdate = prisma.contributions.update({
                 where: { id: current.id },
                 data: {
                   valor: contribution.valor,
@@ -315,17 +442,10 @@ export class ProjectService {
                   user: contribution.userId ? { connect: { id: contribution.userId } } : undefined,
                 },
               });
-            } else {
-              return prisma.contributions.create({
-                data: {
-                  valor: contribution.valor,
-                  entrada: contribution.entrada,
-                  parcelas: contribution.parcelas,
-                  valorParcela: contribution.valorParcela,
-                  user: { connect: { id: contribution.userId } },
-                  project: { connect: { id: updateProject.id } },
-                },
-              });
+
+              if (current.valor > contribution.valor) {
+              } else if (current.valor < contribution.valor) {
+              }
             }
           }
 
@@ -381,6 +501,22 @@ export class ProjectService {
     const total = Number(valorTotal.replace("R$", "").replace(/\./g, "").replace(",", ""));
     if (acumulado > total)
       throw new CustomError("Valor acumulado não pode ser maior que valor total");
+
+    const userIdCounts = contribuicoes.reduce(
+      (acc, contribution) => {
+        if (contribution.userId) {
+          acc[contribution.userId] = (acc[contribution.userId] || 0) + 1;
+        }
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const repeatedUserIds = Object.keys(userIdCounts).filter((userId) => userIdCounts[userId] > 1);
+
+    if (repeatedUserIds.length > 0) {
+      throw new CustomError(`Pode ter apenas uma contribuição por usuário`);
+    }
   }
 
   private async validateProjectExists(id: string): Promise<Project> {
