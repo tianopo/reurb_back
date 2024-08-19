@@ -37,5 +37,5 @@ export class ProjectDto {
 
   @IsOptional()
   @IsArray()
-  contribuicoes?: ContributionDto[];
+  contributions?: ContributionDto[];
 }

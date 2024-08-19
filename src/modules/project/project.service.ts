@@ -21,10 +21,10 @@ export class ProjectService {
       status,
       funcionarios,
       clientes,
-      contribuicoes,
+      contributions,
     } = data;
 
-    await this.validateContributions(contribuicoes, valorAcumulado, valorTotal);
+    await this.validateContributions(contributions, valorAcumulado, valorTotal);
     await this.validateUsersExist(funcionarios, clientes);
 
     const projectTransaction = await prisma.$transaction(async (prisma) => {
@@ -46,10 +46,16 @@ export class ProjectService {
       });
 
       const tasksToCreate: any[] = [];
-      const contributionPromises = contribuicoes?.map(async (contribution) => {
+      const contributionPromises = contributions?.map(async (contribution) => {
         const financials = [];
         const numParcelas = parseInt(contribution.parcelas, 10);
         const valorParcela = parseFloat(contribution.valorParcela);
+
+        const user = contribution.userId
+          ? await prisma.user.findUnique({
+              where: { id: contribution.userId },
+            })
+          : null;
 
         const createContribution = await prisma.contributions.create({
           data: {
@@ -86,9 +92,9 @@ export class ProjectService {
             vencimentoDate.setDate(10);
             vencimento = "10";
           }
-          vencimentoDate.setMonth(vencimentoDate.getMonth() + i + 1 - 3);
+          vencimentoDate.setMonth(vencimentoDate.getMonth() + i);
           financials.push({
-            nome: `Pagamento ${i + 1} - ${nome}`,
+            nome: `Pagamento ${i + 1} - ${nome} - ${user.nome}`,
             tipo: "Entrada",
             valor: valorParcela.toString(),
             status: "Lançamentos",
@@ -96,7 +102,7 @@ export class ProjectService {
             vencimento,
           });
           tasksToCreate.push({
-            descricao: `${nome} - Parcela ${i + 1}`,
+            descricao: `${user.nome} - ${nome} - Parcela ${i + 1}`,
             data: vencimentoDate,
             prioridade: "Baixa",
             status: "à Fazer",
@@ -106,7 +112,7 @@ export class ProjectService {
 
           if (i === 0) {
             financials.push({
-              nome: `Entrada - ${nome}`,
+              nome: `Entrada - ${nome} - ${user.nome}`,
               tipo: "Entrada",
               valor: valorParcela.toString(),
               status: "Lançamentos",
@@ -114,7 +120,7 @@ export class ProjectService {
               vencimento,
             });
             tasksToCreate.push({
-              descricao: `${nome} - Entrada`,
+              descricao: `${user.nome} - ${nome} - Entrada`,
               data: vencimentoDate,
               prioridade: "Baixa",
               status: "à Fazer",
@@ -331,6 +337,12 @@ export class ProjectService {
               },
             });
 
+            const user = contribution.userId
+              ? await prisma.user.findUnique({
+                  where: { id: contribution.userId },
+                })
+              : null;
+
             for (let i = 0; i < numParcelas; i++) {
               const vencimentoDate = new Date();
               let vencimento = "";
@@ -346,11 +358,9 @@ export class ProjectService {
                 vencimentoDate.setDate(10);
                 vencimento = "10";
               }
-              vencimentoDate.setMonth(
-                vencimentoDate.getMonth() + i + 1 + currentContributions.length,
-              );
+              vencimentoDate.setMonth(vencimentoDate.getMonth() + i + currentContributions.length);
               financials.push({
-                nome: `Pagamento ${i + 1} - ${nome}`,
+                nome: `Pagamento ${i + 1} - ${nome} - ${user.nome}`,
                 tipo: "Entrada",
                 valor: valorParcela.toString(),
                 status: "Lançamentos",
@@ -358,7 +368,7 @@ export class ProjectService {
                 vencimento,
               });
               tasksToCreate.push({
-                descricao: `${nome} - Parcela ${i + 1}`,
+                descricao: `${user.nome} - ${nome} - Parcela ${i + 1}`,
                 data: vencimentoDate,
                 prioridade: "Baixa",
                 status: "à Fazer",
@@ -368,7 +378,7 @@ export class ProjectService {
 
               if (i === 0) {
                 financials.push({
-                  nome: `Entrada - ${nome}`,
+                  nome: `Entrada - ${nome} - ${user.nome}`,
                   tipo: "Entrada",
                   valor: valorParcela.toString(),
                   status: "Lançamentos",
@@ -376,7 +386,7 @@ export class ProjectService {
                   vencimento,
                 });
                 tasksToCreate.push({
-                  descricao: `${nome} - Entrada`,
+                  descricao: `${user.nome} - ${nome} - Entrada`,
                   data: vencimentoDate,
                   prioridade: "Baixa",
                   status: "à Fazer",
@@ -430,6 +440,11 @@ export class ProjectService {
             current.valorParcela !== contribution.valorParcela;
 
           if (needsUpdate) {
+            const user = contribution.userId
+              ? await prisma.user.findUnique({
+                  where: { id: contribution.userId },
+                })
+              : null;
             if (current) {
               // Atualizar contribuição existente
               await prisma.contributions.update({
@@ -502,11 +517,11 @@ export class ProjectService {
                     vencimento = "10";
                   }
                   vencimentoDate.setMonth(
-                    vencimentoDate.getMonth() + i + 1 + currentContributions.length,
+                    vencimentoDate.getMonth() + i + currentContributions.length,
                   );
 
                   financials.push({
-                    nome: `Pagamento ${i + 1} - ${nome}`,
+                    nome: `Pagamento ${i + 1} - ${nome} - ${user.nome}`,
                     tipo: "Entrada",
                     valor: contribution.valorParcela.toString(),
                     status: "Lançamentos",
@@ -517,7 +532,7 @@ export class ProjectService {
                   });
 
                   tasksToCreate.push({
-                    descricao: `${nome} - Parcela ${i + 1}`,
+                    descricao: `${user.nome} - ${nome} - Parcela ${i + 1}`,
                     data: vencimentoDate,
                     prioridade: "Baixa",
                     status: "à Fazer",
@@ -528,7 +543,7 @@ export class ProjectService {
                   // Adiciona a primeira parcela (entrada)
                   if (i === 0) {
                     financials.push({
-                      nome: `Entrada - ${nome}`,
+                      nome: `Entrada - ${nome} - ${user.nome}`,
                       tipo: "Entrada",
                       valor: contribution.entrada.toString(),
                       status: "Lançamentos",
@@ -539,7 +554,7 @@ export class ProjectService {
                     });
 
                     tasksToCreate.push({
-                      descricao: `${nome} - Entrada`,
+                      descricao: `${user.nome} - ${nome} - Entrada`,
                       data: vencimentoDate,
                       prioridade: "Baixa",
                       status: "à Fazer",
@@ -565,7 +580,7 @@ export class ProjectService {
                   where: {
                     contributionId: current.id,
                     descricao: {
-                      startsWith: `${nome} - Parcela `,
+                      startsWith: `${user.nome} - ${nome} - Parcela `,
                     },
                   },
                 });
@@ -610,7 +625,7 @@ export class ProjectService {
                       vencimento = "10";
                     }
                     vencimentoDate.setMonth(
-                      vencimentoDate.getMonth() + index + 1 + currentContributions.length,
+                      vencimentoDate.getMonth() + index + currentContributions.length,
                     );
 
                     await prisma.financial.update({
@@ -671,14 +686,14 @@ export class ProjectService {
 
     for (const contribuicao of contribuicoes) {
       const valor = Number(
-        contribuicao.valor.replace("R$", "").replace(/\./g, "").replace(",", ""),
+        contribuicao.valor.replace("R$", "").replace(/\./g, "").replace(",", "."),
       );
       const entrada = Number(
-        contribuicao.entrada.replace("R$", "").replace(/\./g, "").replace(",", ""),
+        contribuicao.entrada.replace("R$", "").replace(/\./g, "").replace(",", "."),
       );
       const parcelas = Number(contribuicao.parcelas);
       const valorParcela = Number(
-        contribuicao.valorParcela.replace("R$", "").replace(/\./g, "").replace(",", ""),
+        contribuicao.valorParcela.replace("R$", "").replace(/\./g, "").replace(",", "."),
       );
 
       if (isNaN(valor) || isNaN(entrada) || isNaN(parcelas) || isNaN(valorParcela)) {
@@ -694,8 +709,8 @@ export class ProjectService {
       totalContribuicoes += valor;
     }
 
-    const acumulado = Number(valorAcumulado.replace("R$", "").replace(/\./g, "").replace(",", ""));
-    const total = Number(valorTotal.replace("R$", "").replace(/\./g, "").replace(",", ""));
+    const acumulado = Number(valorAcumulado.replace("R$", "").replace(/\./g, "").replace(",", "."));
+    const total = Number(valorTotal.replace("R$", "").replace(/\./g, "").replace(",", "."));
     if (totalContribuicoes !== acumulado)
       throw new CustomError("Valor acumulado tem que ser igual as contribuições");
     if (acumulado > total)

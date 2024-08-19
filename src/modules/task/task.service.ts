@@ -67,33 +67,47 @@ export class TaskService {
 
   async update(id: string, task: TaskUpdateDto) {
     const { descricao, data, prioridade, projeto, status, funcionarios } = task;
+
     await this.validateId(id);
     await this.validateTaskExists(id);
 
-    if (funcionarios && funcionarios.length > 0) {
-      const ids = funcionarios.map((f) => f.id);
-      await this.validateUsersExist(ids);
-    }
+    const updatedTask = await prisma.$transaction(async (prisma) => {
+      const existingTask = await prisma.task.findUnique({ where: { id } });
 
-    const utcDate = new Date(data);
-    utcDate.setHours(utcDate.getHours() - 3);
+      const isDescriptionImmutable =
+        /.* - Parcela \d+$/.test(existingTask.descricao) || /Entrada/.test(existingTask.descricao);
+      if (isDescriptionImmutable && existingTask.descricao !== descricao)
+        throw new CustomError(
+          "A descrição da tarefa não pode ser alterada se foi criada pelo Projeto",
+        );
 
-    return prisma.task.update({
-      where: { id },
-      data: {
-        descricao: descricao,
-        data: utcDate,
-        prioridade: prioridade,
-        projeto: projeto ? { connect: { id: projeto.id } } : { disconnect: true },
-        status: status,
-        funcionarios: {
-          set:
-            funcionarios?.length > 0
-              ? funcionarios.map((funcionario) => ({ id: funcionario.id }))
-              : [],
+      if (funcionarios && funcionarios.length > 0) {
+        const ids = funcionarios.map((f) => f.id);
+        await this.validateUsersExist(ids);
+      }
+
+      const utcDate = new Date(data);
+      utcDate.setHours(utcDate.getHours() - 3);
+
+      return prisma.task.update({
+        where: { id },
+        data: {
+          descricao: descricao,
+          data: utcDate,
+          prioridade: prioridade,
+          projeto: projeto ? { connect: { id: projeto.id } } : { disconnect: true },
+          status: status,
+          funcionarios: {
+            set:
+              funcionarios?.length > 0
+                ? funcionarios.map((funcionario) => ({ id: funcionario.id }))
+                : [],
+          },
         },
-      },
+      });
     });
+
+    return updatedTask;
   }
 
   async remove(id: string) {
