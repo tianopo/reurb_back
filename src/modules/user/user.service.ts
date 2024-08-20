@@ -196,6 +196,14 @@ export class UserService {
     });
   }
 
+  async getClients() {
+    return await prisma.user.findMany({
+      where: {
+        acesso: Role.Cliente,
+      },
+    });
+  }
+
   async getClientsAndEmployees() {
     const employeeAndCliente = await prisma.user.findMany({
       where: {

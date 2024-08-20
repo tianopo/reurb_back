@@ -71,13 +71,17 @@ export class UserController {
 
   @Get(":id")
   async getId(@Param("id") id: string) {
-    console.log(id, "1");
     return await this.userService.getId(id);
   }
 
   @Get("employee/funcionario")
   async getEmployees() {
     return this.userService.getEmployees();
+  }
+
+  @Get("client/cliente")
+  async getClients() {
+    return this.userService.getClients();
   }
 
   @Get("client/employee")

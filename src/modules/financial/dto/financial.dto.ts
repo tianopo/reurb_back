@@ -1,4 +1,4 @@
-import { IsIn, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 
 export class FinancialDto {
   @IsString()
@@ -26,13 +26,12 @@ export class FinancialDto {
   @IsString()
   @IsNotEmpty()
   @Length(1, 100)
-  @IsIn(["Crédito", "Débito", "Boleto", "Dinheiro", "Pix", "Outros"])
+  @IsIn(["Crédito", "Débito", "Boleto", "Dinheiro", "Pix", "Outros", "Automático"])
   pagamento: string;
 
   @IsString()
-  @IsNotEmpty()
-  @Length(1, 2)
-  @IsIn(["10", "20", "30"])
+  @IsOptional()
+  @IsIn(["10", "20", "30", ""])
   vencimento: string;
 
   contributionId: string;

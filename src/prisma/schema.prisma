@@ -135,7 +135,7 @@ model Financial {
   valor      String @db.VarChar(100)
   status     String @db.VarChar(20)
   pagamento  String @db.VarChar(100)
-  vencimento String @db.VarChar(2)
+  vencimento String? @db.VarChar(2)
 
   // Relacionamentos
   contribution Contributions? @relation("ContributionFinancials", fields: [contributionId], references: [id], onDelete: Cascade)
