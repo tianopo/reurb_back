@@ -13,6 +13,13 @@ export class FinancialService {
     const { nome, tipo, valor, status, pagamento, vencimento, contributionId, clienteId } = data;
     await this.validateValuesExist(contributionId, clienteId);
 
+    const isNameInvalid = /.* - Parcela \d+$/.test(nome) || /Entrada/.test(nome);
+    if (isNameInvalid) {
+      throw new CustomError(
+        "Não é permitido criar uma tarefa com uma descrição que corresponda aos padrões proibidos:' - Parcela (numero qualquer)' e 'Entrada'.",
+      );
+    }
+
     const create = await prisma.financial.create({
       data: {
         nome,

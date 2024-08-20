@@ -13,6 +13,14 @@ export class TaskService {
 
   async create(data: TaskDto) {
     await this.validateUsersExist(data.funcionarios);
+    const isDescriptionInvalid =
+      /.* - Parcela \d+$/.test(data.descricao) || /Entrada/.test(data.descricao);
+    if (isDescriptionInvalid) {
+      throw new CustomError(
+        "Não é permitido criar uma tarefa com uma descrição que corresponda aos padrões proibidos:' - Parcela (numero qualquer)' e 'Entrada'.",
+      );
+    }
+
     const task = {
       descricao: data.descricao,
       data: new Date(data.data),
