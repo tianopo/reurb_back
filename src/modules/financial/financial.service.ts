@@ -10,8 +10,8 @@ import { FinancialUpdateDto } from "./dto/financialUpdate.dto";
 export class FinancialService {
   constructor(private readonly tokenService: TokenService) {}
   async create(data: FinancialDto) {
-    const { nome, tipo, valor, status, pagamento, vencimento, contributionId, clienteId } = data;
-    await this.validateValuesExist(contributionId, clienteId);
+    const { nome, tipo, valor, status, pagamento, vencimento, clienteId } = data;
+    await this.validateValuesExist(clienteId);
 
     const isNameInvalid = /.* - Parcela \d+$/.test(nome) || /Entrada/.test(nome);
     if (isNameInvalid) {
@@ -28,7 +28,6 @@ export class FinancialService {
         status,
         pagamento,
         vencimento,
-        contribution: contributionId ? { connect: { id: contributionId } } : undefined,
         cliente: clienteId ? { connect: { id: clienteId } } : undefined,
       },
     });
@@ -51,18 +50,21 @@ export class FinancialService {
     };
 
     if (acesso === Role.Gestor) {
-      return prisma.financial.findMany({
+      const financial = await prisma.financial.findMany({
         include: including,
+        orderBy: { updated: "desc" },
       });
+      return financial;
     } else if ([Role.Admin, Role.Funcionario].includes(acesso)) {
       const filterUserId = acesso === Role.Admin ? id : createdById;
-      return prisma.financial.findMany({
+      return await prisma.financial.findMany({
         where: {
           cliente: {
             createdById: filterUserId,
           },
         },
         include: including,
+        orderBy: { updated: "desc" },
       });
     } else {
       throw new CustomError("Acesso não autorizado");
@@ -75,11 +77,10 @@ export class FinancialService {
   }
 
   async update(id: string, data: FinancialUpdateDto) {
-    const { nome, tipo, valor, status, pagamento, vencimento, contribution, cliente } = data;
+    const { nome, tipo, valor, status, pagamento, vencimento, cliente } = data;
     await this.validateId(id);
     await this.validateFinancialExists(id);
-    await this.validateValuesExist(contribution.id, cliente.id);
-
+    if (cliente) await this.validateValuesExist(cliente.id);
     const update = await prisma.financial.update({
       where: { id },
       data: {
@@ -89,8 +90,7 @@ export class FinancialService {
         status,
         pagamento,
         vencimento,
-        cliente: cliente.id ? { connect: { id: cliente.id } } : { disconnect: true },
-        contribution: contribution.id ? { connect: { id: contribution.id } } : { disconnect: true },
+        cliente: cliente ? { connect: { id: cliente.id } } : { disconnect: true },
       },
     });
 
@@ -110,32 +110,21 @@ export class FinancialService {
     return financial;
   }
 
-  private async validateValuesExist(contributionId: string, clienteId: string): Promise<void> {
+  private async validateValuesExist(clienteId: string): Promise<void> {
     const errors: string[] = [];
     const promises = [];
-
-    if (contributionId) {
-      promises.push(
-        prisma.contributions.findUnique({ where: { id: contributionId }, select: { id: true } }),
-      );
-    }
-
+    console.log(clienteId, "cliente");
     if (clienteId) {
       promises.push(prisma.user.findUnique({ where: { id: clienteId }, select: { id: true } }));
     }
 
-    const [contributionExists, clienteExists] =
+    const [clienteExists] =
       promises.length > 0 ? await prisma.$transaction(promises) : [null, null];
-
-    if (contributionId && !contributionExists) {
-      errors.push(`Contribuição com ID ${contributionId} não encontrada.`);
-    }
 
     if (clienteId && !clienteExists) {
       errors.push(`Cliente com ID ${clienteId} não encontrado.`);
     }
 
-    // Lança um erro se houver mensagens
     if (errors.length > 0) {
       throw new CustomError(errors.join(" "));
     }

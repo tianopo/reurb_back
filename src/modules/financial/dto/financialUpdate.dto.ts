@@ -34,12 +34,7 @@ export class FinancialUpdateDto {
   @IsIn(["10", "20", "30", ""])
   vencimento: string;
 
-  @IsObject()
-  contribution?: {
-    id: string;
-    nome: string;
-  };
-
+  @IsOptional()
   @IsObject()
   cliente?: {
     id: string;

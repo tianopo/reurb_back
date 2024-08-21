@@ -34,7 +34,6 @@ export class FinancialDto {
   @IsIn(["10", "20", "30", ""])
   vencimento: string;
 
-  contributionId: string;
-
+  @IsOptional()
   clienteId: string;
 }

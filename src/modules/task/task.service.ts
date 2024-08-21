@@ -56,7 +56,10 @@ export class TaskService {
     };
 
     if ([Role.Gestor, Role.Admin].includes(user.acesso))
-      return prisma.task.findMany({ include: including });
+      return prisma.task.findMany({
+        include: including,
+        orderBy: { updated: "desc" },
+      });
     else
       return prisma.task.findMany({
         where: {
@@ -65,6 +68,7 @@ export class TaskService {
           },
         },
         include: including,
+        orderBy: { updated: "desc" },
       });
   }
 

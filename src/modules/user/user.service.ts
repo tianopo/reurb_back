@@ -141,6 +141,7 @@ export class UserService {
     if (acesso === Role.Gestor)
       return await prisma.user.findMany({
         include: including,
+        orderBy: { updated: "desc" },
       });
     else if (acesso === Role.Admin)
       return prisma.user.findMany({
@@ -148,6 +149,7 @@ export class UserService {
           OR: [{ id }, { createdById: id }],
         },
         include: including,
+        orderBy: { updated: "desc" },
       });
     else if (acesso === Role.Funcionario)
       return prisma.user.findMany({
@@ -155,6 +157,7 @@ export class UserService {
           OR: [{ id }, { createdById }],
         },
         include: including,
+        orderBy: { updated: "desc" },
       });
     else if (acesso === Role.Cliente)
       return prisma.user.findMany({

@@ -202,6 +202,7 @@ export class ProjectService {
           clientes: including.clientes,
           contributions: including.contributions,
         },
+        orderBy: { updated: "desc" },
       });
     } else if (user.acesso === Role.Cliente) {
       return prisma.user.findMany({
@@ -215,6 +216,7 @@ export class ProjectService {
             include: including,
           },
         },
+        orderBy: { updated: "desc" },
       });
     } else if (user.acesso === Role.Funcionario) {
       return prisma.project.findMany({
@@ -228,6 +230,7 @@ export class ProjectService {
           clientes: including.clientes,
           contributions: including.contributions,
         },
+        orderBy: { updated: "desc" },
       });
     } else {
       throw new CustomError("Acesso não autorizado");
