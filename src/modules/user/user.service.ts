@@ -77,19 +77,20 @@ export class UserService {
   }
 
   async updateRecoverPassword(data: RecoverPasswordDto) {
-    const { email, senha } = data;
+    const { email, senha, confirmarSenha } = data;
+    if (senha !== confirmarSenha)
+      throw new CustomError("Senha e a Confirmação de senha devem ser iguais");
+
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (!userExists) throw new CustomError("E-mail não existe");
 
     const hashedPassword = await bcrypt.hash(senha, 10);
-    const updated = new Date();
 
     return prisma.user.update({
       where: { email },
       data: {
-        ...data,
+        email,
         senha: hashedPassword,
-        updated,
       },
     });
   }
@@ -122,7 +123,7 @@ export class UserService {
 
   async list(authorization: string) {
     const { id, acesso, createdById } = await this.userData(authorization);
-    console.log(createdById);
+
     const including = {
       projetosEmp: {
         select: {
@@ -168,7 +169,7 @@ export class UserService {
 
   async getId(id: string) {
     if (!id) throw new CustomError("ID de usuário é obrigatório.");
-    console.log(id);
+
     const user = await prisma.user.findUnique({
       where: { id },
       include: {

@@ -7,7 +7,8 @@ export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
   generateToken(email: string) {
-    return this.jwtService.sign({ email });
+    const secret = process.env.JWT_SECRET;
+    return this.jwtService.sign({ email }, { secret });
   }
 
   async validateToken(token: string) {

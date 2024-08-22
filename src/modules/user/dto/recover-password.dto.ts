@@ -18,6 +18,15 @@ export class RecoverPasswordDto extends Required {
   @Length(6, 30)
   senha: string;
 
+  @GetOneUppercase()
+  @GetOneLowercase()
+  @GetOneSpecialCharacter()
+  @GetOneNumber()
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 30)
+  confirmarSenha: string;
+
   @IsNotEmpty()
   @EmailFormat()
   @IsString()
